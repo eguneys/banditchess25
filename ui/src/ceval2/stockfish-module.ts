@@ -1,4 +1,4 @@
-import type StockfishWeb from 'lila-stockfish-web'
+import type StockfishWeb from '@lichess-org/stockfish-web'
 import { objectStorage } from './objectStorage'
 import { defined } from 'chessops'
 
@@ -82,6 +82,7 @@ export async function protocol(hooks: ProtocolHooks) {
   send('uci')
 
   function send(cmd: string) {
+    console.log(cmd)
     send_uci?.(cmd)
   }
 
@@ -97,6 +98,9 @@ export async function protocol(hooks: ProtocolHooks) {
   function parse_received(command: string) {
     const parts = command.trim().split(/\s+/g)
     if (parts[0] === 'uciok') {
+
+      set_option('UCI_Chess960', 'true')
+
       send('ucinewgame')
       send('isready')
     } else if (parts[0] === 'readyok') {
@@ -294,7 +298,7 @@ export async function boot(hooks: BootHooks) {
   }
 
 
-  let makeModule = await import('lila-stockfish-web/sf17-79.js')
+  let makeModule = await import('@lichess-org/stockfish-web/sf171-79.js')
   let module: StockfishWeb = await new Promise((resolve, reject) => {
 
     makeModule.default({

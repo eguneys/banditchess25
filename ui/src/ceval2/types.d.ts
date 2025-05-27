@@ -1,1 +1,1 @@
-declare module 'lila-stockfish-web/sf17-79.js'
+declare module '@lichess-org/stockfish-web/sf171-79.js'

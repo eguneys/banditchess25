@@ -1,37 +1,25 @@
-import { makePersisted } from "@solid-primitives/storage";
 import { createContext, useContext, type JSX } from "solid-js";
 import { createStore } from "solid-js/store";
+import { create_replay, type ReplayActions, type ReplayState } from "./create_replay";
 
-type Page = 'home' | 'stockfish' | 'player'
-
-type Actions = {
-    set_page(page: Page): void
-    inc_nth_vs_stockfish(): void
-}
+type Actions = ReplayActions
 
 type State = {
-    page: Page
-    nth_vs_stockfish: number
+    replay: ReplayState
 }
-
-let p_version = 1
 
 type Store = [State, Actions]
 
 export function StoreProvider(props: { children: JSX.Element}) {
 
-    let [state, set_state] = makePersisted(createStore<State>({
-        page: 'home',
-        nth_vs_stockfish: 1
-    }), { name: '.banditchess.v' + p_version})
+    let [replay_state, replay_actions] = create_replay()
+
+    let [state, _set_state] = createStore<State>({
+        replay: replay_state
+    })
 
     let actions = {
-        set_page(page: Page) {
-            set_state("page", page)
-        },
-        inc_nth_vs_stockfish() {
-            set_state("nth_vs_stockfish", _ => _ + 1)
-        }
+        ...replay_actions
     }
 
     let store: Store = [state, actions]

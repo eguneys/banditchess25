@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@lichess-org/stockfish-web':
+        specifier: ^0.0.13
+        version: 0.0.13
       '@solid-primitives/storage':
         specifier: ^4.3.2
         version: 4.3.2(solid-js@1.9.7)
@@ -24,8 +27,8 @@ importers:
         specifier: ^0.14.2
         version: 0.14.2
       lila-stockfish-web:
-        specifier: ^0.0.11
-        version: 0.0.11
+        specifier: ^0.0.10
+        version: 0.0.10
       solid-js:
         specifier: ^1.9.5
         version: 1.9.7
@@ -300,6 +303,9 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
+  '@lichess-org/stockfish-web@0.0.13':
+    resolution: {integrity: sha512-EpcySs+J03xnWDIdY8lz48DSEbDjlxt3lX0I1bv6VgFkW6KkmUZ22aD/BlaNIvyf+mG55KvFhaI5cDSVpMsEqQ==}
+
   '@rollup/rollup-android-arm-eabi@4.41.1':
     resolution: {integrity: sha512-NELNvyEWZ6R9QMkiytB4/L4zSEaBC03KIXEghptLGLZWJ6VPrL63ooZQCOnlx36aQPGhzuOMwDerC1Eb2VmrLw==}
     cpu: [arm]
@@ -551,8 +557,8 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  lila-stockfish-web@0.0.11:
-    resolution: {integrity: sha512-2n4WbLsQ/WDE79FKP7ciV4C5tXJcY21wT7M+iTDWl/UHbPTLwJ3dPwSbNBdQfRdJbtf/p9fY5XJIzuON12HFmQ==}
+  lila-stockfish-web@0.0.10:
+    resolution: {integrity: sha512-oPpm6pT69vr3Ha+kOc6qGaG85LbQJ+o3AJZ/n8PWzD+aKR0hs9wlHBTsH3oGyHFR/88dkHJxE1De/v+yWV7S7w==}
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
@@ -1054,6 +1060,8 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
+  '@lichess-org/stockfish-web@0.0.13': {}
+
   '@rollup/rollup-android-arm-eabi@4.41.1':
     optional: true
 
@@ -1255,7 +1263,7 @@ snapshots:
 
   json5@2.2.3: {}
 
-  lila-stockfish-web@0.0.11: {}
+  lila-stockfish-web@0.0.10: {}
 
   lru-cache@5.1.1:
     dependencies:

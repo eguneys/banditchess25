@@ -3,6 +3,7 @@ import type { FEN, UCI } from "../components/step_types"
 import { protocol, type LocalEval } from "../ceval2/stockfish-module"
 import { createAsync } from "@solidjs/router";
 import { createStore } from "solid-js/store";
+import throttle from "../common/throttle";
 
 const gen_game_id = (() => { let i = 0; return () => `${i++}` })()
 
@@ -46,7 +47,7 @@ function get_multipv(p: Protocol, fen: FEN): Promise<MultiPV> {
     
     let on_best_move: (_: MultiPV) => void
 
-    let depth = 8
+    let depth = 10
     let multi_pv = 6
     let ply = 0
 
@@ -74,11 +75,9 @@ function get_multipv(p: Protocol, fen: FEN): Promise<MultiPV> {
         emit: function (ev: LocalEval): void {
             on_best_move(ev.pvs.map(_ => _.moves[0]))
         },
-        /*
-        on_pvs: throttle(200, function (ev: LocalEval): void {
-            on_depth(ev)
+        on_pvs: throttle(200, function (_ev: LocalEval): void {
+            //on_depth(ev)
         }),
-        */
     })
 
     return new Promise(resolve => {

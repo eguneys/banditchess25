@@ -1,5 +1,5 @@
-import { Accessor, createContext, createMemo, createResource, createSignal, DEV, EffectOptions, JSXElement, SignalOptions } from "solid-js";
-import { LocalEval, protocol } from "./stockfish-module";
+import { createContext, createMemo, createResource, createSignal, DEV, type Accessor, type EffectOptions, type JSXElement, type SignalOptions } from "solid-js";
+import { protocol, type LocalEval } from "./stockfish-module";
 import throttle from "../common/throttle";
 import { isServer } from "solid-js/web";
 

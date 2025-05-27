@@ -1,6 +1,6 @@
 type WinningChances = number;
-import { EvalScore } from "./stockfish-module";
-import { Color } from "chessops";
+import { type EvalScore } from "./stockfish-module";
+import { type Color } from "chessops";
 
 const toPov = (color: Color, diff: number): number => (color === 'white' ? diff : -diff);
 
