@@ -1,0 +1,22 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      lila-stockfish-web:
+        specifier: ^0.0.11
+        version: 0.0.11
+
+packages:
+
+  lila-stockfish-web@0.0.11:
+    resolution: {integrity: sha512-2n4WbLsQ/WDE79FKP7ciV4C5tXJcY21wT7M+iTDWl/UHbPTLwJ3dPwSbNBdQfRdJbtf/p9fY5XJIzuON12HFmQ==}
+
+snapshots:
+
+  lila-stockfish-web@0.0.11: {}

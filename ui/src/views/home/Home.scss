@@ -1,0 +1,36 @@
+main.bandit {
+    .play-vs-buttons {
+        display: flex;
+        gap: 2em;
+
+        button {
+            cursor: pointer;
+            padding: 0.8em;
+        }
+    }
+    position: relative;
+
+    .fixed {
+        -webkit-user-select: none;
+        user-select: none;
+        z-index: -1;
+        position: fixed;
+        background: rgb(255, 196, 0);
+        color: #192a41;
+        font-size: 2200px;
+        text-shadow: 20px 20px rgb(8, 2, 76);
+        transform: translate(100px, -1600px) rotate(10deg);
+        border-right: 30px solid rgb(103, 223, 103);
+    }
+
+
+    .leaderboard {
+        margin-left: 0.5em;
+        display: flex;
+        gap: 6em;
+
+        .category.disabled {
+            color: gray;
+        }
+    }
+}

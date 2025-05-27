@@ -1,0 +1,35 @@
+* {
+    margin: 0;
+    padding: 0;
+        -webkit-user-select: none;
+        user-select: none;
+}
+
+
+@font-face {
+    font-family: 'Saira';
+    src: url('./Saira-VariableFont_wdth,wght.ttf');
+}
+
+body {
+    font-family: 'Saira';
+    background: #dff;
+}
+
+html, p, button {
+    margin: 8px;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(110, 16, 16);
+}
+
+ul {
+    list-style: decimal;
+    list-style-position: inside;
+
+    div, span {
+        margin-left: 0.3em;
+    }
+}
