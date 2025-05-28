@@ -14,7 +14,7 @@ main.vs {
         overflow-x: hidden;
         overflow-y: hidden;
 
-        animation: 60s slide-in infinite;
+        animation: 100s slide-in infinite;
 
         @keyframes slide-in {
             0%,100% {
@@ -237,6 +237,8 @@ main.vs {
                 flex: 0 0 calc(50% - 0.4em);
                 padding: 0.2em;
         
+                display: flex;
+                overflow: hidden;
 
                 &:nth-child(odd) {
                     background: rgb(225, 241, 205);
@@ -251,6 +253,40 @@ main.vs {
                 &.on-path-end {
                     background: rgb(157, 43, 43);
                     color: rgb(225, 241, 205);
+                }
+
+                .delta {
+                    font-size: .8em;
+                    margin-left: auto;
+                    align-self: flex-end;
+                    line-height: 1em;
+
+                    transition: all cubic-bezier(0.075, 0.82, 0.165, 1) .4s;
+
+                    transform: scale(1.8);
+
+                    &.opening {
+                        color: gray;
+                        opacity: .8;
+                    }
+
+                    &.zero, &.opening {
+                        font-size: .6em;
+                        transform: scale(1);
+                    }
+                    &.one {
+                        font-size: .7;
+                        transform: scale(1);
+                    }
+                    
+                    &.four {
+                        transform: rotate(-5deg) scale(1);
+                    }
+
+                    &.five {
+                        color: rgb(190, 162, 6);
+                        transform: rotate(-10deg) scale(1);
+                    }
                 }
             }
         }
@@ -338,7 +374,7 @@ main.vs {
                 font-size: 0.8em;
                 align-self: flex-end;
             }
-            .combo, .streak {
+            .score, .combo, .streak {
                 transition: all cubic-bezier(1, 0, 0, 1) .2s;
 
                 &.bump {

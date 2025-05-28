@@ -83,7 +83,7 @@ function WithStockfish() {
             black: { classic: 0, combo: 0, streak: 0 }
         }
     }), {
-        name: '.banditchess.vs_stockfish_save.v2'
+        name: '.banditchess.vs_stockfish_save.v3'
     })
 
     const nth = () => persist_state.nth
@@ -100,6 +100,7 @@ function WithStockfish() {
     const movable = () => persist_state.game_result === undefined
 
     const steps = createMemo(() => state.replay.list)
+    const score_deltas = createMemo(() => persist_state.deltas)
 
     const fen = createMemo(() => state.replay.fen)
     const last_move = createMemo(() => state.replay.last_move)
@@ -161,38 +162,46 @@ function WithStockfish() {
     const score_add_skip_opening = createMemo(() => state.replay.list.length < 5 * 2)
 
     const add_score = (color: Color, score: number) => {
+        batch(() => {
 
-        if (score_add_skip_opening()) {
-            return
-        }
+            if (score > 0) {
+                set_persist_state("deltas", persist_state.deltas.length, score)
+            } else {
+                set_persist_state("deltas", persist_state.deltas.length, 0)
+            }
 
-        let old_streak = persist_state.scores[color].streak
-        if (score === 0) {
-            set_persist_state("scores", color, "streak", 0)
-        } else {
-            set_persist_state("scores", color, "streak", _ => _ + 1)
-        }
+            if (score_add_skip_opening()) {
+                return
+            }
 
-        let streak = persist_state.scores[color].streak
+            let old_streak = persist_state.scores[color].streak
+            if (score === 0) {
+                set_persist_state("scores", color, "streak", 0)
+            } else {
+                set_persist_state("scores", color, "streak", _ => _ + 1)
+            }
 
-        if (combo(streak) !== combo(old_streak)) {
-            set_persist_state("scores", color, "streak_delta", combo(streak) - combo(old_streak))
-        }
+            let streak = persist_state.scores[color].streak
 
-        if (score > 0) {
-            set_persist_state("scores", color, "classic_delta", score)
-            set_persist_state("scores", color, "combo_delta", score * combo(streak))
-        }
+            if (combo(streak) !== combo(old_streak)) {
+                set_persist_state("scores", color, "streak_delta", combo(streak) - combo(old_streak))
+            }
 
-        set_persist_state("scores", color, "classic", persist_state.scores[color].classic + score)
-        set_persist_state("scores", color, "combo", persist_state.scores[color].combo + score * combo(streak))
+            if (score > 0) {
+                set_persist_state("scores", color, "classic_delta", score)
+                set_persist_state("scores", color, "combo_delta", score * combo(streak))
+            }
+
+            set_persist_state("scores", color, "classic", persist_state.scores[color].classic + score)
+            set_persist_state("scores", color, "combo", persist_state.scores[color].combo + score * combo(streak))
 
 
-        setTimeout(() => {
-            set_persist_state("scores", color, "classic_delta", undefined)
-            set_persist_state("scores", color, "combo_delta", undefined)
-            set_persist_state("scores", color, "streak_delta", undefined)
-        }, 200)
+            setTimeout(() => {
+                set_persist_state("scores", color, "classic_delta", undefined)
+                set_persist_state("scores", color, "combo_delta", undefined)
+                set_persist_state("scores", color, "streak_delta", undefined)
+            }, 200)
+        })
     }
 
     createComputed(on(() => {
@@ -252,11 +261,14 @@ function WithStockfish() {
             set_persist_state("sans", [])
             set_persist_state("cursor_path", '')
 
+            set_persist_state("scores", "white", { classic: 0, combo: 0, streak: 0 })
+            set_persist_state("scores", "black", { classic: 0, combo: 0, streak: 0 })
+
+            set_persist_state("deltas", [])
+
             initialize_replay([], '')
             request_next_fen_or_end_the_game(fen())
 
-            set_persist_state("scores", "white", { classic: 0, combo: 0, streak: 0 })
-            set_persist_state("scores", "black", { classic: 0, combo: 0, streak: 0 })
         })
     }
 
@@ -304,7 +316,7 @@ function WithStockfish() {
                     <span class='time'>0:00</span>
                 </div>
                 <div class='replay'>
-                    <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()} />
+                    <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()} deltas={score_deltas()} />
                     <div class='scores'>
                         <ScoreDelta small={color()==="black"} flip={true} skip={score_add_skip_opening()} {...persist_state.scores.white} />
                         <ScoreDelta small={color()==="white"} flip={false} skip={score_add_skip_opening()} {...persist_state.scores.black} />
@@ -396,7 +408,7 @@ function score_pv(pvs: MultiPV, uci: UCI) {
     return pvs.length - i - 1
 }
 
-function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_path: Path, steps: Step[] }) {
+function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_path: Path, steps: Step[], deltas: number[] }) {
 
 
     let $moves_el: HTMLDivElement
@@ -418,16 +430,32 @@ function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_pat
         cont.scrollTo({ behavior: 'smooth', top })
     })
 
-
     return (<>
         <div class='list-wrap'>
             <div ref={el => { $moves_el = el }} class='list'>
-                <For each={props.steps}>{step =>
-                    <span onClick={() => props.onSetCursorPath(step.path)} classList={{ 'on-path-end': step.path === props.cursor_path }} class='step'>{step.ply % 2 === 1 ? ply_to_index(step.ply) : ''} {step.san} </span>
+                <For each={props.steps}>{(step, i) =>
+                <Step {...props} is_opening={i() < 10} delta={props.deltas[i()]} step={step} />
                 }</For>
+                <div class='padding'></div>
             </div>
         </div>
         <div class='padding'></div>
+    </>)
+}
+
+function Step(props: { is_opening: boolean, delta: number, onSetCursorPath: (path: Path) => void, step: Step, cursor_path: Path }) {
+
+    const step = props.step
+    const plus_if_positive = (is_opening: boolean, delta: number) => is_opening ? delta : delta === 0 ? '0': `+${delta}`
+
+    const delta_klass = (is_opening: boolean, delta: number) => !show_klass() ? '' : is_opening ? 'opening' : delta >= 5 ? 'five' : delta > 2 ? 'four' : delta > 0 ? 'one' : 'zero'
+
+    const [show_klass, set_show_klass] = createSignal(false)
+
+    setTimeout(() => set_show_klass(true), 100)
+
+    return (<>
+        <span onClick={() => props.onSetCursorPath(step.path)} classList={{ 'on-path-end': step.path === props.cursor_path }} class='step'>{step.ply % 2 === 1 ? ply_to_index(step.ply) : ''} {step.san} <span classList={{ opening: props.is_opening, [delta_klass(props.is_opening, props.delta)]: true }} class='delta'>{plus_if_positive(props.is_opening, props.delta)} </span> </span>
     </>)
 }
 

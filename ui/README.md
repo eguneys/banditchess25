@@ -11,9 +11,10 @@
 * [ ] Show opening on Top Scores
 * [ ] More Top scores categories for each opening
 
-* [ ] Stockfish Download Progress
 * [ ] Animated Restart Transition
 * [ ] Animated Page Transitions
+
+* [ ] Stockfish Download Progress
 * [ ] Game End, Game Begin, Game Restart, Transitions
 * [ ] Game End Display on Replay
 * [ ] Game End Display Popup
