@@ -48,7 +48,7 @@ function get_multipv(p: Protocol, fen: FEN): Promise<MultiPV> {
     let on_best_move: (_: MultiPV) => void
 
     let depth = 10
-    let multi_pv = 6
+    let multi_pv = 7
     let ply = 0
 
     let threads = Math.max(1, navigator.hardwareConcurrency - 2)

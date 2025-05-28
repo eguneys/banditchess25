@@ -1,4 +1,4 @@
-import { Chess, makeUci, Position } from "chessops"
+import { Chess, makeUci, parseUci, Position } from "chessops"
 import { INITIAL_FEN, makeFen, parseFen } from "chessops/fen"
 import { parseSan } from "chessops/san"
 
@@ -24,6 +24,11 @@ export const parent_path = (path: Path) => path.split(' ').slice(0, -1).join(' '
 export const fen_pos = (fen: FEN) => Chess.fromSetup(parseFen(fen).unwrap()).unwrap()
 export const fen_is_end = (fen: FEN) => fen_pos(fen).isEnd()
 export const fen_turn = (fen: FEN) => fen_pos(fen).turn
+export const fen_after_uci = (fen: FEN, uci: UCI) => {
+    let pos = fen_pos(fen)
+    pos.play(parseUci(uci)!)
+    return makeFen(pos.toSetup())
+}
 
 export function initial_step_play_san(san: SAN, initial_fen = INITIAL_FEN): Step {
     let pos = fen_pos(initial_fen)

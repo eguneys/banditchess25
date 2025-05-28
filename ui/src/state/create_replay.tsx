@@ -15,6 +15,9 @@ export type ReplayState = {
 export type ReplayActions = {
     initialize_replay(sans: SAN[], cursor_path?: Path): void
     add_uci_and_goto_it(uci: UCI): Step
+    set_cursor_path(path: Path): void
+    goto_next_path_if_can(): void
+    goto_prev_path_if_can(): void
 }
 
 
@@ -76,6 +79,24 @@ export function create_replay(): [ReplayState, ReplayActions] {
                 set_state("last_move", [new_step.uci, new_step.san])
             })
             return new_step
+        },
+        set_cursor_path(path: Path) {
+            set_state('cursor_path', path)
+        },
+        goto_next_path_if_can() {
+
+            let i = state.list.findIndex(_ => _.path === state.cursor_path)
+
+            let next = state.list[i + 1]
+            if (next) {
+                set_state('cursor_path', next.path)
+            }
+        },
+        goto_prev_path_if_can() {
+            if (state.cursor_path.length > 0) {
+                let prev_path = state.cursor_path.split(' ').slice(0, -1).join(' ')
+                set_state('cursor_path', prev_path)
+            }
         }
     }
 

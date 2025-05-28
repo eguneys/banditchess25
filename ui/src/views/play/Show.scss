@@ -57,7 +57,7 @@ main.vs {
 
     .board-wrap {
 
-        box-shadow: 4px 5px 1px black;
+        box-shadow: 2px 3px 1px black;
 
     .board {
             aspect-ratio: 1;
@@ -68,20 +68,104 @@ main.vs {
         display: flex;
         flex-flow: column;
 
-        .replay {
-          flex: 1;
-          background: red;
+        .top-padding, .bottom-padding {
+            flex: 1;
         }
+
+        .replay {
+            @include media.mq-is-col1 {
+                width: 80%;
+                align-self: center;
+            }
+
+
+          display: flex;
+          flex-flow: column;
+          flex: 3;
+          font-size: 1.3em;
+
+          justify-content: space-between;
+
+          background: rgb(220, 213, 204);
+          box-shadow: 2px 3px 1px black;
+          margin: 0.5em 0;
+            ::-webkit-scrollbar {
+                width: 3px;
+                /*background: transparent;*/
+                /* make scrollbar transparent */
+            }
+
+
+
+          .list-wrap {
+            overflow-y: scroll;
+            /* https://stackoverflow.com/questions/70198644/overflow-scroll-on-div-with-flex-1-without-specific-height */
+            flex: 1 1 0;
+
+            @include media.mq-is-col1 {
+            flex: 1 1 100px;
+            }
+
+          .list {
+            display: flex;
+            flex-flow: row wrap;
+            position: relative;
+
+            .step {
+                flex: 0 0 calc(50% - 0.4em);
+                padding: 0.2em;
+        
+
+                &:nth-child(odd) {
+                    background: rgb(225, 241, 205);
+                    color: rgb(7, 22, 3);
+                }
+        
+                &:nth-child(even) {
+                    color: rgb(225, 241, 205);
+                    background: rgb(13, 43, 7);
+                }
+
+                &.on-path-end {
+                    background: rgb(157, 43, 43);
+                    color: rgb(225, 241, 205);
+                }
+            }
+        }
+    }
+
+        .scores {
+            display: flex;
+            justify-content: space-between;
+
+
+            .score-delta:first-child {
+                padding: 0.2em;
+                background: rgb(225, 241, 205);
+                color: rgb(13, 43, 7);
+                border-top: 1px solid rgb(13, 43, 7);
+            }
+            .score-delta:last-child {
+                padding: 0.2em;
+                background: rgb(13, 43, 7);
+                color: rgb(225, 241, 205);
+                border-top: 1px solid rgb(225, 241, 205);
+            }
+        }
+
+        }
+
+
 
         .controls {
             display: flex;
-            gap: 0.1em;
+            gap: 0.3em;
             margin: 3px;
             button {
                 flex: 1;
                 margin: 0;
                 padding: 0.5em;
-                font-size: 1em;
+                font-size: 1.2em;
             }
         }
 
@@ -89,9 +173,61 @@ main.vs {
         .user-bottom {
             display: flex;
             justify-content: space-between;
-            font-size: 1.2em;
             border: 2px solid rgb(15, 18, 76);
             padding: 0.2em;
+            align-items: flex-end;
+
         }
+
+        .score-delta {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+
+            &.flip {
+                flex-direction: row-reverse;
+            }
+
+            .score, .combo-streak {
+                line-height: 1em;
+                font-size: 1.3em;
+                &.skip {
+                    color: gray;
+                    opacity: .6;
+                }
+            }
+
+            .combo-streak {
+                display: flex;
+                gap: 0.2em;
+                font-size: 1em;
+
+                .combo {
+                    align-content: flex-end;
+                }
+            }
+
+
+
+            .streak {
+                font-size: 0.8em;
+                align-self: flex-end;
+            }
+            .combo, .streak {
+                transition: all cubic-bezier(1, 0, 0, 1) .2s;
+
+                &.bump {
+                    color: rgb(120, 105, 19);
+                    transform: scale(1.6, 1.6) rotate(10deg);
+                }
+
+                &.shoot {
+                    color: rgb(216, 35, 35);
+                    transform: scale(.8, .8) translate(2px, 10px);
+                }
+            }
+            
+        }
+
     }
 }

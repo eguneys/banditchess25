@@ -1,14 +1,15 @@
 import { createComputed, createEffect, createMemo, createSignal, For, on, untrack } from 'solid-js'
-import { PlayUciBoard } from '../../components/PlayUciBoard'
+import { non_passive_on_wheel, PlayUciBoard } from '../../components/PlayUciBoard'
 import { useStore } from '../../state'
 import { StockfishProvider, useStockfish, type MultiPV } from '../../state/stockfish'
 import './Show.scss'
 import type { Color, FEN, Key } from 'chessground/types'
-import { fen_turn, type Path, type SAN, type Step } from '../../components/step_types'
+import { fen_turn, type Path, type SAN, type Step, type UCI } from '../../components/step_types'
 import { makePersisted } from '@solid-primitives/storage'
 import { createStore } from 'solid-js/store'
 import { MeetButton } from '../../components/MeetButton'
 import { useNavigate } from '@solidjs/router'
+import { arr_rnd, rnd_sign } from '../../game/random'
 
 export default function() {
 
@@ -22,6 +23,20 @@ export default function() {
 type StockfishVSSave = {
     sans: SAN[],
     cursor_path: Path
+}
+
+type Score = {
+    classic: number
+    combo: number
+    streak: number
+    streak_delta?: number
+    classic_delta?: number
+    combo_delta?: number
+}
+
+type StockfishScoreState = {
+    stockfish: Score
+    you: Score
 }
 
 function WithStockfish() {
@@ -42,8 +57,18 @@ function WithStockfish() {
         console.log(engine_failed())
     })
 
+    let [score_state, set_score_state] = createStore<StockfishScoreState>({
+        stockfish: { classic: 0, combo: 0, streak: 0 },
+        you: { classic: 0, combo: 0, streak: 0 }
+    })
 
-    let [state, {initialize_replay, add_uci_and_goto_it}] = useStore()
+    let [state, {
+        initialize_replay, 
+        add_uci_and_goto_it, 
+        set_cursor_path,
+        goto_next_path_if_can,
+        goto_prev_path_if_can
+    }] = useStore()
 
     const [persist_state, set_persist_state] = makePersisted(createStore<StockfishVSSave>({
         sans: [],
@@ -69,6 +94,7 @@ function WithStockfish() {
     const last_move = createMemo(() => state.replay.last_move)
 
     const [last_fen_request, set_last_fen_request] = createSignal<FEN | undefined>(undefined)
+    const [last_user_step, set_last_user_step] = createSignal<Step | undefined>(undefined)
 
     const handle_last_pv_request = (fpvs: [FEN, MultiPV] | undefined) => {
         if (!fpvs) {
@@ -83,15 +109,78 @@ function WithStockfish() {
 
         let f_color = fen_turn(fen)
 
-        console.log(fen, pvs)
         if (f_color !== color()) {
-
             let pv = select_engine_pv(pvs)
+
+            let engine_score = score_pv(pvs, pv.uci)
+            add_score("stockfish", engine_score)
 
             let step = add_uci_and_goto_it(pv.uci)
             add_persist_step(step)
+
+            set_last_fen_request(step.fen)
+            request_multipv(step.fen)
+        } else {
+            check_and_add_user_score()
         }
     }
+
+    function check_and_add_user_score() {
+        let step = last_user_step()
+
+        if (!step) {
+            return
+        }
+
+        set_last_user_step(undefined)
+
+        let pvs = stockfish.pvs[step.before_fen]
+
+        if (!pvs) {
+            return
+        }
+
+        let user_score = score_pv(pvs, step.uci)
+        add_score("you", user_score)
+    }
+
+    const score_add_skip_opening = createMemo(() => state.replay.list.length < 5 * 2)
+
+    const add_score = (you: "stockfish" | "you", score: number) => {
+
+        if (score_add_skip_opening()) {
+            return
+        }
+
+        let old_streak = score_state[you].streak
+        if (score === 0) {
+            set_score_state(you, "streak", 0)
+        } else {
+            set_score_state(you, "streak", _ => _ + 1)
+        }
+
+        let streak = score_state[you].streak
+
+        if (combo(streak) !== combo(old_streak)) {
+            set_score_state(you, "streak_delta", combo(streak) - combo(old_streak))
+        }
+
+        if (score > 0) {
+            set_score_state(you, "classic_delta", score)
+            set_score_state(you, "combo_delta", score * combo(streak))
+        }
+
+        set_score_state(you, "classic", score_state[you].classic + score)
+        set_score_state(you, "combo", score_state[you].combo + score * combo(streak))
+
+
+        setTimeout(() => {
+            set_score_state(you, "classic_delta", undefined)
+            set_score_state(you, "combo_delta", undefined)
+            set_score_state(you, "streak_delta", undefined)
+        }, 200)
+    }
+
     createComputed(on(() => {
         let fen = last_fen_request()
         if (!fen) {
@@ -114,8 +203,11 @@ function WithStockfish() {
         let step = add_uci_and_goto_it(uci)
         add_persist_step(step)
 
+        set_last_user_step(step)
         set_last_fen_request(state.replay.fen)
         request_multipv(state.replay.fen)
+
+        check_and_add_user_score()
     }
 
     const reset_persistence = () => {
@@ -123,6 +215,9 @@ function WithStockfish() {
         set_persist_state("cursor_path", '')
 
         initialize_replay([], '')
+
+        set_score_state('you', { classic: 0, combo: 0, streak: 0 })
+        set_score_state('stockfish', { classic: 0, combo: 0, streak: 0 })
     }
 
     const on_restart = () => {
@@ -135,26 +230,38 @@ function WithStockfish() {
         navigate('/')
     }
 
+    const set_on_wheel = (i: number) => {
+        if (i > 0) {
+            goto_next_path_if_can()
+        } else {
+            goto_prev_path_if_can()
+        }
+    }
+
+
     return (<>
     <main class='vs'>
         <div class='info'>
             <h3>Bandit vs Stockfish</h3>
             <span>Match #{nth()}</span>
         </div>
-        <div class='board-wrap'>
+        <div on:wheel={non_passive_on_wheel(set_on_wheel)} class='board-wrap'>
             <div class='board'>
             <PlayUciBoard movable={movable()} color={color()} fen={fen()} last_move={last_move()} play_orig_key={on_play_orig_key}/>
             </div>
         </div>
         <div class='replay-wrap'>
+            <div class='top-padding'></div>
             <div class='user-top'>
                 <span class='user ai'>Stockfish</span>
-                <span class='score'>0</span>
-                <span class='score'>x2 0</span>
                 <span class='time'>0:00</span>
             </div>
             <div class='replay'>
-                <ReplaySingle steps={steps()}/>
+                <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()}/>
+                <div class='scores'>
+                    <ScoreDelta flip={true} skip={score_add_skip_opening()} {...score_state.you} />
+                    <ScoreDelta flip={false} skip={score_add_skip_opening()} {...score_state.stockfish} />
+                </div>
             </div>
             <div class="controls">
                 <MeetButton meet={true} onClick={on_restart}>Restart</MeetButton>
@@ -162,10 +269,9 @@ function WithStockfish() {
             </div>
             <div class='user-bottom'>
                 <span class='user'>You</span>
-                <span class='score'>0</span>
-                <span class='score'>x2 0</span>
                 <span class='time'>0:00</span>
             </div>
+            <div class='bottom-padding'></div>
         </div>
         <div class='history'>
             History
@@ -174,18 +280,106 @@ function WithStockfish() {
     </>)
 }
 
-function select_engine_pv(pv: MultiPV) {
-    return pv[0]
-}
-
-function ReplaySingle(props: { steps: Step[] }) {
+const combo = (streak: number) => streak > 2 ? 4 : streak > 1 ? 3 : 2
+function ScoreDelta(props: { flip: boolean, skip: boolean, classic: number, streak: number, combo: number, streak_delta?: number, classic_delta?: number, combo_delta?: number }) {
 
     return (<>
-        <div class='replay'>
-            <For each={props.steps}>{step =>
-                <span class='step'>{ply_to_index(step.ply)} {step.san} </span>
-            }</For>
+        <div classList={{flip: props.flip }} class='score-delta'>
+            <span classList={{ skip: props.skip, bump: props.classic_delta !== undefined }} class='score'>{props.classic}</span>
+            <div classList={{ skip: props.skip }} class='combo-streak'>
+                <span classList={{ bump: props.streak_delta !== undefined && props.streak_delta > 0, shoot: props.streak_delta !== undefined && props.streak_delta < 0 }} class='streak'>x{combo(props.streak)}</span>
+                <span classList={{ bump: props.combo_delta !== undefined }} class='combo'>{props.combo}</span>
+            </div>
         </div>
+    </>)
+}
+
+function select_engine_pv(pv: MultiPV) {
+    let top_cp = pv[0].cp
+    if (!top_cp) {
+        return pv[0]
+    }
+
+    let aa = pv.filter(_ => _.cp && Math.abs(_.cp) - Math.abs(top_cp) < 10)
+    let bb = pv.filter(_ => _.cp && Math.abs(_.cp) - Math.abs(top_cp) < 20)
+    let cc = pv.filter(_ => _.cp && Math.abs(_.cp) - Math.abs(top_cp) < 60)
+    let dd = pv.filter(_ => _.cp && Math.abs(_.cp) - Math.abs(top_cp) >= 60)
+
+
+    let a0 = arr_rnd(aa)
+    let b0 = arr_rnd(bb)
+    let c0 = arr_rnd(cc)
+    let d0 = arr_rnd(dd)
+
+    let res = []
+
+    if (a0) {
+        res.push(a0)
+        res.push(a0)
+        res.push(a0)
+        res.push(a0)
+    }
+    if (b0) {
+        res.push(b0)
+        res.push(b0)
+        res.push(b0)
+    }
+    if (c0) {
+        res.push(c0)
+        res.push(c0)
+    }
+    if (d0) {
+        res.push(d0)
+        if (rnd_sign()) {
+            res.push(d0)
+            res.push(d0)
+            res.push(d0)
+        }
+    }
+
+    return arr_rnd(res)
+}
+
+function score_pv(pvs: MultiPV, uci: UCI) {
+    let i = pvs.findIndex(_ => _.uci === uci)
+    if (i === -1) {
+        return 0
+    }
+    return pvs.length - i - 1
+}
+
+function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_path: Path, steps: Step[] }) {
+
+
+    let $moves_el: HTMLDivElement
+    createEffect(() => {
+
+        let cursor_path = props.cursor_path
+        let cont = $moves_el.parentElement
+        if (!cont) {
+            return
+        }
+
+        const target = $moves_el.querySelector<HTMLElement>('.on-path-end')
+        if (!target) {
+            cont.scrollTop = cursor_path.length > 0 ? 99999 : 0
+            return
+        }
+
+        let top = target.offsetTop - cont.offsetHeight / 2 + target.offsetHeight
+        cont.scrollTo({ behavior: 'smooth', top })
+    })
+
+
+    return (<>
+        <div class='list-wrap'>
+            <div ref={el => { $moves_el = el }} class='list'>
+                <For each={props.steps}>{step =>
+                    <span onClick={() => props.onSetCursorPath(step.path)} classList={{ 'on-path-end': step.path === props.cursor_path }} class='step'>{step.ply % 2 === 1 ? ply_to_index(step.ply) : ''} {step.san} </span>
+                }</For>
+            </div>
+        </div>
+        <div class='padding'></div>
     </>)
 }
 
