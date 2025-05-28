@@ -1,12 +1,13 @@
 ### TODO
 
 * [x] Auto Promotion to Queen
+* [x] Play White or Black
 
-* [ ] Play White or Black
 * [ ] Stockfish Download Progress
 * [ ] Animated Background
 * [ ] Animated Restart Transition
 * [ ] Animated Page Transitions
+* [ ] Game End, Game Begin, Game Restart, Transitions
 * [ ] Game End Display on Replay
 * [ ] Game End Display Popup
 * [ ] Game End High Score Notification

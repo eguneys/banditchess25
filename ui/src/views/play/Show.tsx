@@ -1,4 +1,4 @@
-import { createComputed, createEffect, createMemo, createSignal, For, on, untrack } from 'solid-js'
+import { batch, createComputed, createEffect, createMemo, createSignal, For, on, untrack } from 'solid-js'
 import { non_passive_on_wheel, PlayUciBoard } from '../../components/PlayUciBoard'
 import { useStore } from '../../state'
 import { StockfishProvider, useStockfish, type MultiPV } from '../../state/stockfish'
@@ -10,7 +10,7 @@ import { createStore } from 'solid-js/store'
 import { MeetButton } from '../../components/MeetButton'
 import { useNavigate } from '@solidjs/router'
 import { arr_rnd, rnd_sign } from '../../game/random'
-import { parseSquare } from 'chessops'
+import { opposite, parseSquare } from 'chessops'
 
 export default function() {
 
@@ -29,6 +29,7 @@ type StockfishVSSave = {
     sans: SAN[]
     cursor_path: Path
     game_result: GameResult | undefined
+    color: Color
 }
 
 type Score = {
@@ -75,6 +76,7 @@ function WithStockfish() {
     }] = useStore()
 
     const [persist_state, set_persist_state] = makePersisted(createStore<StockfishVSSave>({
+        color: rnd_sign() ? 'white': 'black',
         nth: 1,
         sans: [],
         cursor_path: '',
@@ -90,13 +92,12 @@ function WithStockfish() {
         set_persist_state("cursor_path", step.path)
     }
 
-    initialize_replay(persist_state.sans, persist_state.cursor_path)
+
+    const color = () => persist_state.color
 
     const movable = () => persist_state.game_result === undefined
 
     const steps = createMemo(() => state.replay.list)
-
-    const [color, _set_color] = createSignal<Color>('white')
 
     const fen = createMemo(() => state.replay.fen)
     const last_move = createMemo(() => state.replay.last_move)
@@ -105,6 +106,7 @@ function WithStockfish() {
     const [last_user_step, set_last_user_step] = createSignal<Step | undefined>(undefined)
 
 
+    initialize_replay(persist_state.sans, persist_state.cursor_path)
 
     const handle_last_pv_request = (fpvs: [FEN, MultiPV] | undefined) => {
         if (!fpvs) {
@@ -119,7 +121,7 @@ function WithStockfish() {
 
         let f_color = fen_turn(fen)
 
-        if (f_color !== color()) {
+        if (f_color !== persist_state.color) {
             let pv = select_engine_pv(pvs)
 
             let engine_score = score_pv(pvs, pv.uci)
@@ -241,15 +243,19 @@ function WithStockfish() {
     }
 
     const reset_persistence = () => {
-        set_persist_state('game_result', undefined)
-        set_persist_state("nth", _ => _ + 1)
-        set_persist_state("sans", [])
-        set_persist_state("cursor_path", '')
+        batch(() => {
+            set_persist_state('color', opposite(persist_state.color))
+            set_persist_state('game_result', undefined)
+            set_persist_state("nth", _ => _ + 1)
+            set_persist_state("sans", [])
+            set_persist_state("cursor_path", '')
 
-        initialize_replay([], '')
+            initialize_replay([], '')
+            request_next_fen_or_end_the_game(fen())
 
-        set_score_state('you', { classic: 0, combo: 0, streak: 0 })
-        set_score_state('stockfish', { classic: 0, combo: 0, streak: 0 })
+            set_score_state('you', { classic: 0, combo: 0, streak: 0 })
+            set_score_state('stockfish', { classic: 0, combo: 0, streak: 0 })
+        })
     }
 
     const on_restart = () => {
@@ -271,6 +277,8 @@ function WithStockfish() {
     }
 
 
+    request_next_fen_or_end_the_game(fen())
+
     return (<>
     <main class='vs'>
         <div class='info'>
@@ -279,7 +287,7 @@ function WithStockfish() {
         </div>
         <div on:wheel={non_passive_on_wheel(set_on_wheel)} class='board-wrap'>
             <div class='board'>
-            <PlayUciBoard movable={movable()} color={color()} fen={fen()} last_move={last_move()} play_orig_key={on_play_orig_key}/>
+            <PlayUciBoard orientation={color()} movable={movable()} color={color()} fen={fen()} last_move={last_move()} play_orig_key={on_play_orig_key}/>
             </div>
         </div>
         <div class='replay-wrap'>
