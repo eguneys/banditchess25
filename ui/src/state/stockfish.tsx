@@ -73,7 +73,11 @@ function get_multipv(p: Protocol, fen: FEN): Promise<MultiPV> {
         current_fen: fen,
         moves: [],
         emit: function (ev: LocalEval): void {
-            on_best_move(ev.pvs.map(_ => _.moves[0]))
+            on_best_move(ev.pvs.map(_ => ({
+                uci: _.moves[0],
+                cp: _.cp,
+                mate: _.mate
+            })))
         },
         on_pvs: throttle(200, function (_ev: LocalEval): void {
             //on_depth(ev)
@@ -86,7 +90,12 @@ function get_multipv(p: Protocol, fen: FEN): Promise<MultiPV> {
 }
 
 
-type MultiPV = UCI[]
+export type PV = {
+    uci: UCI,
+    cp?: number
+    mate?: number
+}
+export type MultiPV = PV[]
 
 type Actions = {
     request_multipv(fen: FEN): void

@@ -73,6 +73,17 @@ main.vs {
           background: red;
         }
 
+        .controls {
+            display: flex;
+            gap: 0.1em;
+            margin: 3px;
+            button {
+                flex: 1;
+                margin: 0;
+                padding: 0.5em;
+                font-size: 1em;
+            }
+        }
 
         .user-top,
         .user-bottom {

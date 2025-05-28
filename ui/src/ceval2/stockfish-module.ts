@@ -82,7 +82,6 @@ export async function protocol(hooks: ProtocolHooks) {
   send('uci')
 
   function send(cmd: string) {
-    console.log(cmd)
     send_uci?.(cmd)
   }
 

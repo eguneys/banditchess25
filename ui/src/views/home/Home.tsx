@@ -1,6 +1,7 @@
 import { A, useNavigate } from "@solidjs/router"
 import { For, Show } from "solid-js"
 import './Home.scss'
+import { MeetButton } from "../../components/MeetButton"
 
 export default function Home() {
   
@@ -25,8 +26,8 @@ export default function Home() {
         <span>z</span>
     </div>
     <div class='play-vs-buttons'>
-      <button onClick={on_play_vs_stockfish}>Play vs Stockfish</button>
-      <button disabled={true}>Play vs People</button>
+      <MeetButton draw={true} onClick={on_play_vs_stockfish}>Play vs Stockfish</MeetButton>
+      <MeetButton draw={true} disabled={true}>Play vs People</MeetButton>
     </div>
 
     <div class='leaderboard'>

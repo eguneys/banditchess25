@@ -25,7 +25,7 @@ export const fen_pos = (fen: FEN) => Chess.fromSetup(parseFen(fen).unwrap()).unw
 export const fen_is_end = (fen: FEN) => fen_pos(fen).isEnd()
 export const fen_turn = (fen: FEN) => fen_pos(fen).turn
 
-export function initial_step_play_san(san: SAN, initial_fen = INITIAL_FEN) {
+export function initial_step_play_san(san: SAN, initial_fen = INITIAL_FEN): Step {
     let pos = fen_pos(initial_fen)
 
     let move = parseSan(pos, san)!
@@ -52,7 +52,7 @@ export function initial_step_play_san(san: SAN, initial_fen = INITIAL_FEN) {
     }
 }
 
-export function next_step_play_san(step: Step, san: SAN) {
+export function next_step_play_san(step: Step, san: SAN): Step {
     let pos = fen_pos(step.fen)
 
     let move = parseSan(pos, san)!
