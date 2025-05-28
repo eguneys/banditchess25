@@ -36,6 +36,10 @@ main.vs {
             from(rgba(0,0,0,1)), 
             color-stop(0.8, rgba(0, 0, 0, 1)),
             to(rgba(0,0,0,0)));
+            mask-image: -webkit-gradient(linear, left top, right top,
+            from(rgba(0,0,0,1)), 
+            color-stop(0.8, rgba(0, 0, 0, 1)),
+            to(rgba(0,0,0,0)));
         }
 
         .p2 {
@@ -47,6 +51,11 @@ main.vs {
             opacity: .7;
 
             -webkit-mask-image: -webkit-gradient(linear, right top, left top,
+            from(rgba(0,0,0,1)), 
+            color-stop(0.98, rgba(0, 0, 0, 1)),
+            to(rgba(0,0,0,0)));
+
+            mask-image: -webkit-gradient(linear, right top, left top,
             from(rgba(0,0,0,1)), 
             color-stop(0.98, rgba(0, 0, 0, 1)),
             to(rgba(0,0,0,0)));
@@ -188,8 +197,10 @@ main.vs {
                 width: 80%;
                 align-self: center;
             }
+        }
 
 
+        .replay {
           display: flex;
           flex-flow: column;
           flex: 3;
@@ -249,6 +260,9 @@ main.vs {
             display: flex;
             justify-content: space-between;
 
+            .score-delta.small {
+                font-size: 0.8em;
+            }
 
             .score-delta:first-child {
                 padding: 0.2em;

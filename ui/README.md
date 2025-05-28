@@ -2,6 +2,7 @@
 
 * [x] Auto Promotion to Queen
 * [x] Play White or Black
+* [x] Animated Background
 * [ ] Score Delta Show
 
 * [ ] Categorize Openings
@@ -11,7 +12,6 @@
 * [ ] More Top scores categories for each opening
 
 * [ ] Stockfish Download Progress
-* [ ] Animated Background
 * [ ] Animated Restart Transition
 * [ ] Animated Page Transitions
 * [ ] Game End, Game Begin, Game Restart, Transitions

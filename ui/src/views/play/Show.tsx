@@ -24,12 +24,17 @@ export default function() {
 type GameResultType = 'game-ended'
 type GameResult = [GameResultType, Color | undefined]
 
-type StockfishVSSave = StockfishScoreState & {
+type StockfishVSSave = {
     nth: number
     sans: SAN[]
     cursor_path: Path
     game_result: GameResult | undefined
+    deltas: number[]
     color: Color
+    scores: {
+        white: Score,
+        black: Score
+    } 
 }
 
 type Score = {
@@ -41,10 +46,6 @@ type Score = {
     combo_delta?: number
 }
 
-type StockfishScoreState = {
-    stockfish: Score
-    you: Score
-}
 
 function WithStockfish() {
 
@@ -74,12 +75,15 @@ function WithStockfish() {
         color: rnd_sign() ? 'white': 'black',
         nth: 1,
         sans: [],
+        deltas: [],
         cursor_path: '',
         game_result: undefined,
-        stockfish: { classic: 0, combo: 0, streak: 0 },
-        you: { classic: 0, combo: 0, streak: 0 }
+        scores: {
+            white: { classic: 0, combo: 0, streak: 0 },
+            black: { classic: 0, combo: 0, streak: 0 }
+        }
     }), {
-        name: '.banditchess.vs_stockfish_save.v1'
+        name: '.banditchess.vs_stockfish_save.v2'
     })
 
     const nth = () => persist_state.nth
@@ -91,6 +95,7 @@ function WithStockfish() {
 
 
     const color = () => persist_state.color
+    const engine_color = () => opposite(color())
 
     const movable = () => persist_state.game_result === undefined
 
@@ -122,7 +127,7 @@ function WithStockfish() {
             let pv = select_engine_pv(pvs)
 
             let engine_score = score_pv(pvs, pv.uci)
-            add_score("stockfish", engine_score)
+            add_score(engine_color(), engine_score)
 
             let step = add_uci_and_goto_it(pv.uci)
             add_persist_step(step)
@@ -150,43 +155,43 @@ function WithStockfish() {
         }
 
         let user_score = score_pv(pvs, step.uci)
-        add_score("you", user_score)
+        add_score(color(), user_score)
     }
 
     const score_add_skip_opening = createMemo(() => state.replay.list.length < 5 * 2)
 
-    const add_score = (you: "stockfish" | "you", score: number) => {
+    const add_score = (color: Color, score: number) => {
 
         if (score_add_skip_opening()) {
             return
         }
 
-        let old_streak = persist_state[you].streak
+        let old_streak = persist_state.scores[color].streak
         if (score === 0) {
-            set_persist_state(you, "streak", 0)
+            set_persist_state("scores", color, "streak", 0)
         } else {
-            set_persist_state(you, "streak", _ => _ + 1)
+            set_persist_state("scores", color, "streak", _ => _ + 1)
         }
 
-        let streak = persist_state[you].streak
+        let streak = persist_state.scores[color].streak
 
         if (combo(streak) !== combo(old_streak)) {
-            set_persist_state(you, "streak_delta", combo(streak) - combo(old_streak))
+            set_persist_state("scores", color, "streak_delta", combo(streak) - combo(old_streak))
         }
 
         if (score > 0) {
-            set_persist_state(you, "classic_delta", score)
-            set_persist_state(you, "combo_delta", score * combo(streak))
+            set_persist_state("scores", color, "classic_delta", score)
+            set_persist_state("scores", color, "combo_delta", score * combo(streak))
         }
 
-        set_persist_state(you, "classic", persist_state[you].classic + score)
-        set_persist_state(you, "combo", persist_state[you].combo + score * combo(streak))
+        set_persist_state("scores", color, "classic", persist_state.scores[color].classic + score)
+        set_persist_state("scores", color, "combo", persist_state.scores[color].combo + score * combo(streak))
 
 
         setTimeout(() => {
-            set_persist_state(you, "classic_delta", undefined)
-            set_persist_state(you, "combo_delta", undefined)
-            set_persist_state(you, "streak_delta", undefined)
+            set_persist_state("scores", color, "classic_delta", undefined)
+            set_persist_state("scores", color, "combo_delta", undefined)
+            set_persist_state("scores", color, "streak_delta", undefined)
         }, 200)
     }
 
@@ -250,8 +255,8 @@ function WithStockfish() {
             initialize_replay([], '')
             request_next_fen_or_end_the_game(fen())
 
-            set_persist_state('you', { classic: 0, combo: 0, streak: 0 })
-            set_persist_state('stockfish', { classic: 0, combo: 0, streak: 0 })
+            set_persist_state("scores", "white", { classic: 0, combo: 0, streak: 0 })
+            set_persist_state("scores", "black", { classic: 0, combo: 0, streak: 0 })
         })
     }
 
@@ -301,8 +306,8 @@ function WithStockfish() {
                 <div class='replay'>
                     <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()} />
                     <div class='scores'>
-                        <ScoreDelta flip={true} skip={score_add_skip_opening()} {...persist_state.you} />
-                        <ScoreDelta flip={false} skip={score_add_skip_opening()} {...persist_state.stockfish} />
+                        <ScoreDelta small={color()==="black"} flip={true} skip={score_add_skip_opening()} {...persist_state.scores.white} />
+                        <ScoreDelta small={color()==="white"} flip={false} skip={score_add_skip_opening()} {...persist_state.scores.black} />
                     </div>
                 </div>
                 <div class="controls">
@@ -324,10 +329,10 @@ function WithStockfish() {
 }
 
 const combo = (streak: number) => streak > 2 ? 4 : streak > 1 ? 3 : 2
-function ScoreDelta(props: { flip: boolean, skip: boolean, classic: number, streak: number, combo: number, streak_delta?: number, classic_delta?: number, combo_delta?: number }) {
+function ScoreDelta(props: { small: boolean, flip: boolean, skip: boolean, classic: number, streak: number, combo: number, streak_delta?: number, classic_delta?: number, combo_delta?: number }) {
 
     return (<>
-        <div classList={{flip: props.flip }} class='score-delta'>
+        <div classList={{flip: props.flip, small: props.small }} class='score-delta'>
             <span classList={{ skip: props.skip, bump: props.classic_delta !== undefined }} class='score'>{props.classic}</span>
             <div classList={{ skip: props.skip }} class='combo-streak'>
                 <span classList={{ bump: props.streak_delta !== undefined && props.streak_delta > 0, shoot: props.streak_delta !== undefined && props.streak_delta < 0 }} class='streak'>x{combo(props.streak)}</span>
