@@ -4,12 +4,13 @@ import { useStore } from '../../state'
 import { StockfishProvider, useStockfish, type MultiPV } from '../../state/stockfish'
 import './Show.scss'
 import type { Color, FEN, Key } from 'chessground/types'
-import { fen_turn, type Path, type SAN, type Step, type UCI } from '../../components/step_types'
+import { fen_is_end, fen_pos, fen_turn, fen_winner, type Path, type SAN, type Step, type UCI } from '../../components/step_types'
 import { makePersisted } from '@solid-primitives/storage'
 import { createStore } from 'solid-js/store'
 import { MeetButton } from '../../components/MeetButton'
 import { useNavigate } from '@solidjs/router'
 import { arr_rnd, rnd_sign } from '../../game/random'
+import { parseSquare } from 'chessops'
 
 export default function() {
 
@@ -20,9 +21,14 @@ export default function() {
     </>)
 }
 
+type GameResultType = 'game-ended'
+type GameResult = [GameResultType, Color | undefined]
+
 type StockfishVSSave = {
-    sans: SAN[],
+    nth: number
+    sans: SAN[]
     cursor_path: Path
+    game_result: GameResult | undefined
 }
 
 type Score = {
@@ -40,8 +46,6 @@ type StockfishScoreState = {
 }
 
 function WithStockfish() {
-
-    const nth = () => 1
 
     let [stockfish, { request_multipv }] = useStockfish()
 
@@ -71,11 +75,15 @@ function WithStockfish() {
     }] = useStore()
 
     const [persist_state, set_persist_state] = makePersisted(createStore<StockfishVSSave>({
+        nth: 1,
         sans: [],
-        cursor_path: ''
+        cursor_path: '',
+        game_result: undefined
     }), {
-        name: '.banditchess.vs_stockfish_save.v0'
+        name: '.banditchess.vs_stockfish_save.v1'
     })
+
+    const nth = () => persist_state.nth
 
     function add_persist_step(step: Step) {
         set_persist_state("sans", persist_state.sans.length, step.san)
@@ -84,7 +92,7 @@ function WithStockfish() {
 
     initialize_replay(persist_state.sans, persist_state.cursor_path)
 
-    const movable = () => true
+    const movable = () => persist_state.game_result === undefined
 
     const steps = createMemo(() => state.replay.list)
 
@@ -95,6 +103,8 @@ function WithStockfish() {
 
     const [last_fen_request, set_last_fen_request] = createSignal<FEN | undefined>(undefined)
     const [last_user_step, set_last_user_step] = createSignal<Step | undefined>(undefined)
+
+
 
     const handle_last_pv_request = (fpvs: [FEN, MultiPV] | undefined) => {
         if (!fpvs) {
@@ -118,8 +128,8 @@ function WithStockfish() {
             let step = add_uci_and_goto_it(pv.uci)
             add_persist_step(step)
 
-            set_last_fen_request(step.fen)
-            request_multipv(step.fen)
+
+            request_next_fen_or_end_the_game(step.fen)
         } else {
             check_and_add_user_score()
         }
@@ -200,17 +210,39 @@ function WithStockfish() {
 
         let uci = orig + dest
 
+        { // uci auto promote to queen
+            let position = fen_pos(fen())
+            let turn_color = position.turn
+            let piece = position.board.get(parseSquare(orig)!)!
+            if (piece.role === 'pawn' &&
+                ((dest[1] === '8' && turn_color === 'white') || (dest[1] === '1' && turn_color === 'black'))) {
+                uci += 'q'
+            }
+        }
+
         let step = add_uci_and_goto_it(uci)
         add_persist_step(step)
 
         set_last_user_step(step)
-        set_last_fen_request(state.replay.fen)
-        request_multipv(state.replay.fen)
-
         check_and_add_user_score()
+
+        request_next_fen_or_end_the_game(state.replay.fen)
+
+    }
+
+    const request_next_fen_or_end_the_game = (fen: FEN) => {
+        if (fen_is_end(state.replay.fen)) {
+            let result: GameResult = ['game-ended', fen_winner(state.replay.fen)]
+            set_persist_state('game_result', result)
+        } else {
+            set_last_fen_request(fen)
+            request_multipv(fen)
+        }
     }
 
     const reset_persistence = () => {
+        set_persist_state('game_result', undefined)
+        set_persist_state("nth", _ => _ + 1)
         set_persist_state("sans", [])
         set_persist_state("cursor_path", '')
 
@@ -274,7 +306,6 @@ function WithStockfish() {
             <div class='bottom-padding'></div>
         </div>
         <div class='history'>
-            History
         </div>
     </main>
     </>)
