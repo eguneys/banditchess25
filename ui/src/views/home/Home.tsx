@@ -18,13 +18,15 @@ export default function Home() {
 
   return (<>
   <main class='bandit'>
+    <div class='fixed'>
+        <span>z</span>
+    </div>
+    <div class='content'>
     <h2>Bandit Chess</h2>
     <p>
       Classic Chess, but every move scores up to 6 points if it's in the engine's top 6 — otherwise, nothing.
     </p>
-    <div class='fixed'>
-        <span>z</span>
-    </div>
+
     <div class='play-vs-buttons'>
       <MeetButton draw={true} onClick={on_play_vs_stockfish}>Play vs Stockfish</MeetButton>
       <MeetButton draw={true} disabled={true}>Play vs People</MeetButton>
@@ -78,6 +80,7 @@ export default function Home() {
     <footer>
       <A href="/about">About</A>
     </footer>
+    </div>
     </main>
   </>)
 }

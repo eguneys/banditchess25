@@ -137,9 +137,7 @@ export function StockfishProvider(props: { children: JSX.Element}) {
         let fen = queue.pop()
         if (fen) {
             working = true
-            console.log('working fen', fen)
             get_multipv(protocol_stuff.protocol, fen).then(pvs => {
-                console.log('give fen', fen)
                 set_state("pvs", fen, pvs)
                 working = false
                 check_queue()
@@ -151,7 +149,6 @@ export function StockfishProvider(props: { children: JSX.Element}) {
 
     let actions = {
         request_multipv(fen: FEN) {
-            console.log('request fen', fen)
             queue.push(fen)
             check_queue()
         }

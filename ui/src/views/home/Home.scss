@@ -1,4 +1,6 @@
 main.bandit {
+
+    padding: 1em;
     .play-vs-buttons {
         display: flex;
         gap: 2em;
@@ -9,6 +11,10 @@ main.bandit {
         }
     }
     position: relative;
+
+    .content {
+        z-index: 1;
+    }
 
     .fixed {
         -webkit-user-select: none;

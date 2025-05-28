@@ -2,6 +2,13 @@
 
 * [x] Auto Promotion to Queen
 * [x] Play White or Black
+* [ ] Score Delta Show
+
+* [ ] Categorize Openings
+* [ ] Show opening on Main UI
+* [ ] Show opening on Game End Screen
+* [ ] Show opening on Top Scores
+* [ ] More Top scores categories for each opening
 
 * [ ] Stockfish Download Progress
 * [ ] Animated Background
@@ -16,7 +23,6 @@
 * [ ] Vote Screen
 * [ ] Feedback Screen
 * [ ] Game End Increase Match #
-* [ ] Score Delta Show
 * [ ] Difficulty Balance
 * [ ] Timer
 * [ ] Time out end Condition

@@ -24,7 +24,7 @@ export default function() {
 type GameResultType = 'game-ended'
 type GameResult = [GameResultType, Color | undefined]
 
-type StockfishVSSave = {
+type StockfishVSSave = StockfishScoreState & {
     nth: number
     sans: SAN[]
     cursor_path: Path
@@ -62,11 +62,6 @@ function WithStockfish() {
         console.log(engine_failed())
     })
 
-    let [score_state, set_score_state] = createStore<StockfishScoreState>({
-        stockfish: { classic: 0, combo: 0, streak: 0 },
-        you: { classic: 0, combo: 0, streak: 0 }
-    })
-
     let [state, {
         initialize_replay, 
         add_uci_and_goto_it, 
@@ -80,7 +75,9 @@ function WithStockfish() {
         nth: 1,
         sans: [],
         cursor_path: '',
-        game_result: undefined
+        game_result: undefined,
+        stockfish: { classic: 0, combo: 0, streak: 0 },
+        you: { classic: 0, combo: 0, streak: 0 }
     }), {
         name: '.banditchess.vs_stockfish_save.v1'
     })
@@ -164,32 +161,32 @@ function WithStockfish() {
             return
         }
 
-        let old_streak = score_state[you].streak
+        let old_streak = persist_state[you].streak
         if (score === 0) {
-            set_score_state(you, "streak", 0)
+            set_persist_state(you, "streak", 0)
         } else {
-            set_score_state(you, "streak", _ => _ + 1)
+            set_persist_state(you, "streak", _ => _ + 1)
         }
 
-        let streak = score_state[you].streak
+        let streak = persist_state[you].streak
 
         if (combo(streak) !== combo(old_streak)) {
-            set_score_state(you, "streak_delta", combo(streak) - combo(old_streak))
+            set_persist_state(you, "streak_delta", combo(streak) - combo(old_streak))
         }
 
         if (score > 0) {
-            set_score_state(you, "classic_delta", score)
-            set_score_state(you, "combo_delta", score * combo(streak))
+            set_persist_state(you, "classic_delta", score)
+            set_persist_state(you, "combo_delta", score * combo(streak))
         }
 
-        set_score_state(you, "classic", score_state[you].classic + score)
-        set_score_state(you, "combo", score_state[you].combo + score * combo(streak))
+        set_persist_state(you, "classic", persist_state[you].classic + score)
+        set_persist_state(you, "combo", persist_state[you].combo + score * combo(streak))
 
 
         setTimeout(() => {
-            set_score_state(you, "classic_delta", undefined)
-            set_score_state(you, "combo_delta", undefined)
-            set_score_state(you, "streak_delta", undefined)
+            set_persist_state(you, "classic_delta", undefined)
+            set_persist_state(you, "combo_delta", undefined)
+            set_persist_state(you, "streak_delta", undefined)
         }, 200)
     }
 
@@ -253,8 +250,8 @@ function WithStockfish() {
             initialize_replay([], '')
             request_next_fen_or_end_the_game(fen())
 
-            set_score_state('you', { classic: 0, combo: 0, streak: 0 })
-            set_score_state('stockfish', { classic: 0, combo: 0, streak: 0 })
+            set_persist_state('you', { classic: 0, combo: 0, streak: 0 })
+            set_persist_state('stockfish', { classic: 0, combo: 0, streak: 0 })
         })
     }
 
@@ -281,40 +278,47 @@ function WithStockfish() {
 
     return (<>
     <main class='vs'>
-        <div class='info'>
-            <h3>Bandit vs Stockfish</h3>
-            <span>Match #{nth()}</span>
+        <div class='background'>
+            <div class='p1'></div>
+            <div class='p2'></div>
         </div>
-        <div on:wheel={non_passive_on_wheel(set_on_wheel)} class='board-wrap'>
-            <div class='board'>
-            <PlayUciBoard orientation={color()} movable={movable()} color={color()} fen={fen()} last_move={last_move()} play_orig_key={on_play_orig_key}/>
+        <div class='content'>
+            <div class='info'>
+                <h3>Bandit vs Stockfish</h3>
+                <span>Match #{nth()}</span>
             </div>
-        </div>
-        <div class='replay-wrap'>
-            <div class='top-padding'></div>
-            <div class='user-top'>
-                <span class='user ai'>Stockfish</span>
-                <span class='time'>0:00</span>
-            </div>
-            <div class='replay'>
-                <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()}/>
-                <div class='scores'>
-                    <ScoreDelta flip={true} skip={score_add_skip_opening()} {...score_state.you} />
-                    <ScoreDelta flip={false} skip={score_add_skip_opening()} {...score_state.stockfish} />
+            <div on:wheel={non_passive_on_wheel(set_on_wheel)} class='board-wrap'>
+                <div class='board'>
+                    <PlayUciBoard orientation={color()} movable={movable()} color={color()} fen={fen()} last_move={last_move()} play_orig_key={on_play_orig_key} />
                 </div>
             </div>
-            <div class="controls">
-                <MeetButton meet={true} onClick={on_restart}>Restart</MeetButton>
-                <MeetButton meet={true} onClick={on_go_home}>Go Home</MeetButton>
+            <div class='replay-wrap'>
+                <div class='top-padding'></div>
+                <div class='user-top'>
+                    <span class='user ai'>Stockfish</span>
+                    <span class='time'>0:00</span>
+                </div>
+                <div class='replay'>
+                    <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()} />
+                    <div class='scores'>
+                        <ScoreDelta flip={true} skip={score_add_skip_opening()} {...persist_state.you} />
+                        <ScoreDelta flip={false} skip={score_add_skip_opening()} {...persist_state.stockfish} />
+                    </div>
+                </div>
+                <div class="controls">
+                    <MeetButton meet={true} onClick={on_restart}>Restart</MeetButton>
+                    <MeetButton meet={true} onClick={on_go_home}>Go Home</MeetButton>
+                </div>
+                <div class='user-bottom'>
+                    <span class='user'>You</span>
+                    <span class='time'>0:00</span>
+                </div>
+                <div class='bottom-padding'></div>
             </div>
-            <div class='user-bottom'>
-                <span class='user'>You</span>
-                <span class='time'>0:00</span>
+            <div class='history'>
             </div>
-            <div class='bottom-padding'></div>
         </div>
-        <div class='history'>
-        </div>
+
     </main>
     </>)
 }

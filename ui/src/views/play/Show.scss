@@ -1,5 +1,111 @@
 @use '../../base_css/media';
 main.vs {
+    position: relative;
+    padding: 1em;
+    overflow: hidden;
+
+
+    .background {
+        z-index: -1;
+        pointer-events: none;
+        position: fixed;
+        width: 400%;
+        height: 400%;
+        overflow-x: hidden;
+        overflow-y: hidden;
+
+        animation: 60s slide-in infinite;
+
+        @keyframes slide-in {
+            0%,100% {
+                transform: translate(-1%, -1%);
+            }
+        
+            50% {
+                transform: translate(-14%, -14%);
+            }
+        }
+
+        .p1 {
+            aspect-ratio: 1/2;
+            position: absolute;
+            width: 14%;
+
+            opacity: .7;
+            -webkit-mask-image: -webkit-gradient(linear, left top, right top,
+            from(rgba(0,0,0,1)), 
+            color-stop(0.8, rgba(0, 0, 0, 1)),
+            to(rgba(0,0,0,0)));
+        }
+
+        .p2 {
+            aspect-ratio: 1;
+            position: absolute;
+            width: 100%;
+            transform: translate(14%, 0);
+
+            opacity: .7;
+
+            -webkit-mask-image: -webkit-gradient(linear, right top, left top,
+            from(rgba(0,0,0,1)), 
+            color-stop(0.98, rgba(0, 0, 0, 1)),
+            to(rgba(0,0,0,0)));
+        }
+
+        .p2 {
+
+            --s: 215px;
+            /* control the size*/
+            --c1: #5a493d;
+            --c2: #ead6b0;
+        
+            background:
+                linear-gradient(135deg, #0000 18.75%, var(--c1) 0 31.25%, #0000 0),
+                repeating-linear-gradient(45deg, var(--c1) -6.25% 6.25%, var(--c2) 0 18.75%);
+            background-size: var(--s) var(--s);
+        }
+
+        .p1 {
+
+            --s: 145px;
+            /* control the size*/
+            --c1: #705e52;
+            --c2: #ead6b0;
+        
+            background:
+                linear-gradient(135deg, #0000 18.75%, var(--c1) 0 31.25%, #0000 0),
+                repeating-linear-gradient(45deg, var(--c1) -6.25% 6.25%, var(--c2) 0 18.75%);
+            background-size: var(--s) var(--s);
+        }
+
+
+
+        .p3 {
+             --s: 40px;
+             /* control the size*/
+            --c1: #705e52;
+            --c2: #ead6b0;
+
+             --_c: #0000 75%, var(--c1) 0;
+             --_g1: conic-gradient(at 10% 50%, var(--_c));
+             --_g2: conic-gradient(at 50% 10%, var(--_c));
+             background:
+                 var(--_g1),
+                 var(--_g1) calc(1*var(--s)) calc(3*var(--s)),
+                 var(--_g1) calc(2*var(--s)) calc(1*var(--s)),
+                 var(--_g1) calc(3*var(--s)) calc(4*var(--s)),
+                 var(--_g1) calc(4*var(--s)) calc(2*var(--s)),
+                 var(--_g2) 0 calc(4*var(--s)),
+                 var(--_g2) calc(1*var(--s)) calc(2*var(--s)),
+                 var(--_g2) calc(2*var(--s)) 0,
+                 var(--_g2) calc(3*var(--s)) calc(3*var(--s)),
+                 var(--_g2) calc(4*var(--s)) calc(1*var(--s)),
+                 var(--c2);
+             background-size: calc(5*var(--s)) calc(5*var(--s));
+        }
+    }
+
+    .content {
 
     margin-top: 1em;
     justify-content: center;
@@ -37,6 +143,7 @@ main.vs {
         'history';
         grid-template-columns: 90vw;
     }
+}
 
 
     .info {
@@ -57,10 +164,14 @@ main.vs {
 
     .board-wrap {
 
-        box-shadow: 2px 3px 1px black;
 
     .board {
             aspect-ratio: 1;
+        }
+
+        /* do custom board */
+        cg-container {
+        box-shadow: 2px 3px 1px black;
         }
     }
 
