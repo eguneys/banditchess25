@@ -4,6 +4,7 @@
 * [x] Play White or Black
 * [x] Animated Background
 * [ ] Score Delta Show
+* [ ] Clear Local Storage
 
 * [ ] Categorize Openings
 * [ ] Show opening on Main UI

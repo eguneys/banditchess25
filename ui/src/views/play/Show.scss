@@ -298,6 +298,8 @@ main.vs {
 
             .score-delta.small {
                 font-size: 0.8em;
+
+                align-items: flex-end;
             }
 
             .score-delta:first-child {
