@@ -19,24 +19,31 @@
 
 * [x] High scores page, top scores vs personal scores
 
+* [x] Clear Local Storage Beta
+* [x] Stockfish Download Progress
 
-* [ ] Clear Local Storage
-* [ ] Stockfish Download Progress
-* [ ] Volume Control Settings
+* [ ] Stockfish Eval wait time indicator.
+
 
 * [ ] Audio Feedback
 * [ ] Audio Music
 * [ ] Difficulty Balance
+* [ ] Volume Control Settings
 
 * [ ] Leaderboard API Endpoint
 * [ ] Vote API Endpoint
 * [ ] Feedback API Endpoint
 * [ ] Leaderboard Display
 
+* [ ] API Service Unavailable Visuals
+
 * [ ] Deploy Github Pages
 * [ ] Deploy Netlify
 * [ ] Deploy Google Cloud
 
+* [ ] Overall Stress Test
+* [ ] Publish Lichess Blog
+* [ ] Deal with Feedback
 
 ## Disposable
 

@@ -454,6 +454,24 @@ main.vs {
             }
         }
 
+        .user-top {
+            position: relative;
+            .downloading {
+                width: calc(100% - 0.4em);
+                position: absolute;
+                background: gold;
+                text-align: center;
+
+                .bar {
+                    position: absolute;
+                    height: 8px;
+                    background: rgb(99, 237, 141);
+                    margin-top: -8px;
+                    opacity: .8;
+                }
+            }
+        }
+
         .user-top,
         .user-bottom {
             display: flex;

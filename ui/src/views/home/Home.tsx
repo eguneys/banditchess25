@@ -59,6 +59,7 @@ export default function Home() {
     </small>
     <footer>
       <A href="/about">About</A>
+      <A href="/beta">Beta</A>
     </footer>
     </div>
     </main>

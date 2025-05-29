@@ -1,0 +1,15 @@
+main.beta {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+
+    a {
+        text-align: center;
+    }
+
+    .clear {
+        color: darkred;
+        cursor: pointer;
+    }
+
+}

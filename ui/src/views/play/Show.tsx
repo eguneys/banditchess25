@@ -15,6 +15,8 @@ import { AuroraText, MarqueeText, SlicedText } from '../../components/TextEffect
 import { find_score_entry_index, type Score } from '../../state/create_leaderboard'
 import { Leaderboard } from '../../components/Leaderboard'
 
+export const PERSIST_NAME_PLAY_SHOW_STATE = '.banditchess.vs-stockfish-save.v0'
+
 export default function() {
 
     return (<>
@@ -46,8 +48,16 @@ function WithStockfish() {
     const downloaded_nb = () => stockfish.downloaded_nb
     const engine_failed = () => stockfish.engine_failed
 
-    createEffect(() => {
-        console.log(downloaded_nb())
+    const stockfish_download_percent = createMemo(() => {
+        let res = downloaded_nb()
+        if (res) {
+            let i =  Math.round(res.bytes / res.total * 100)
+
+            if (i === 100) {
+                return undefined
+            }
+            return i
+        }
     })
 
     createEffect(() => {
@@ -71,7 +81,7 @@ function WithStockfish() {
         fen_pvs: {},
         show_vote: true
     }), {
-        name: '.banditchess.vs_stockfish_save.v5'
+        name: PERSIST_NAME_PLAY_SHOW_STATE 
     })
 
     const nth = () => persist_state.nth
@@ -264,6 +274,11 @@ function WithStockfish() {
         navigate('/')
     }
 
+    const on_go_highscores = () => {
+        reset_persistence()
+        navigate('/top')
+    }
+
     const set_on_wheel = (i: number) => {
         if (i > 0) {
             goto_next_path_if_can()
@@ -415,6 +430,12 @@ function WithStockfish() {
                 <div class='user-top'>
                     <span class='user ai'>Stockfish</span>
                     <span class='time'>0:00</span>
+                    <Show when={stockfish_download_percent()}>{percent => 
+                      <div class='downloading'>
+                        <span>Downloading Stockfish..</span>
+                        <div class='bar' style={{width: `${percent()}%`}}></div>
+                      </div>
+                    }</Show>
                 </div>
                 <div class='replay'>
                     <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()} deltas={score_deltas()}>
@@ -452,7 +473,7 @@ function WithStockfish() {
                         }>
                             
                             <Show when={show_vote_feedback()} fallback={
-                                <HighScoreReview onBackToGame={on_back_to_game} />
+                                <HighScoreReview onBackToGame={on_back_to_game} onGoHighscores={on_go_highscores} />
                             }>
                                     <VoteFeedback onSkip={on_skip_feedback} onClose={() => set_show_vote_feedback(false)}/>
                             </Show>
@@ -474,17 +495,12 @@ function WithStockfish() {
     </>)
 }
 
-function HighScoreReview(props: { onBackToGame: () => void }) {
-
-    let navigate = useNavigate()
-    const on_see_highscores = () => {
-        navigate('/top')
-    }
+function HighScoreReview(props: { onBackToGame: () => void, onGoHighscores: () => void }) {
 
     return (<>
         <div class='high-score-review'>
             <div class='buttons'>
-                <MeetButton onClick={on_see_highscores} meet={true}>See High Scores</MeetButton>
+                <MeetButton onClick={props.onGoHighscores} meet={true}>See High Scores</MeetButton>
                 <MeetButton onClick={props.onBackToGame} draw={true}>Back to Game</MeetButton>
             </div>
         </div>

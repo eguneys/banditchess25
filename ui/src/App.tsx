@@ -1,9 +1,10 @@
-import { lazy } from 'solid-js'
+import { ErrorBoundary, lazy, Show } from 'solid-js'
 import './App.scss'
 import { StoreProvider} from './state'
 import { MetaProvider } from '@solidjs/meta'
-import { A, Route, Router } from '@solidjs/router'
+import { A, Route, Router, type RouteSectionProps } from '@solidjs/router'
 
+const Beta = lazy(() => import('./views/home/Beta'))
 const Home = lazy(() => import('./views/home/Home'))
 const About = lazy(() => import('./views/home/About'))
 const Stockfish = lazy(() => import('./views/play/Show'))
@@ -19,6 +20,7 @@ function MyApp() {
         <Route path="/vs" component={Stockfish}/>
         <Route path="/top" component={Leaderboard}/>
         <Route path="/about" component={About}/>
+        <Route path="/beta" component={Beta}/>
         <Route path="*" component={NotFound}/>
       </Router>
     </MetaProvider>
@@ -40,7 +42,13 @@ const AppInRouter = (props: RouteSectionProps) => {
       <header>
       </header>
       <div class='main-wrap'>
-        {props.children}
+         <Show when={import.meta.env.DEV} fallback= {
+            <ErrorBoundary fallback={_ => Beta()}>
+              {props.children}
+            </ErrorBoundary>
+          }>
+            {props.children}
+          </Show>
       </div>
     </>
   )
