@@ -1,5 +1,13 @@
 .leaderboard {
     flex: 1;
+
+    &.skip {
+        color: gray;
+        opacity: .8;
+    }
+
+
+
     .highlight {
         animation: .5s flash linear infinite;
     }
@@ -23,14 +31,29 @@
         min-width: 120px;
 
         .item {
+
+            &.new {
+                position: relative;
+                &::after {
+                    content: '';
+                    position: absolute;
+                    border-radius: 8px;
+                    background: rgb(184, 17, 17);
+                    width: 8px;
+                    height: 8px;
+                    right: -10px;
+                }
+            }
+
             display: flex;
             gap: 0.5em;
             .nb {
                 font-weight: bold;
+                flex: 1 0 0;
             }
                 .entry {
                     display: flex;
-                    flex: 1;
+                    flex: 7 0 0;
                     justify-content: space-between;
                 }
             }

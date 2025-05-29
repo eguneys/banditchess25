@@ -31,6 +31,10 @@ export function box_intersect(a: XYWH, b: XYWH) {
 export function pad_7<T>(a: T[]) {
   let p = 7 - a.length
 
+  if (p < 0) {
+    return a.slice(0, 7)
+  }
+
   let res = Array(p).fill(undefined)
 
   return [...a, ...res]

@@ -13,7 +13,7 @@ export default function Home() {
     navigate('vs')
   }
 
-  const [{leaderboard}] = useStore()
+  const [{world_leaderboard}] = useStore()
 
   return (<>
   <main class='bandit'>
@@ -34,13 +34,13 @@ export default function Home() {
     <div class='leaderboards'>
       <div class='categories'>
       <div class='category'>
-        <Leaderboard title="Top Combo Scores" scores={leaderboard.world_top_combos}/>
+        <Leaderboard title="Top Combo Scores" scores={world_leaderboard.world_top_combos}/>
       </div>
       <div class='category'>
-        <Leaderboard title="Top Scores" scores={leaderboard.world_top_scores}/>
+        <Leaderboard title="Top Scores" scores={world_leaderboard.world_top_scores}/>
       </div>
       <div classList={{disabled: true}} class='category'>
-        <Leaderboard title="Top Rating" scores={leaderboard.world_top_rating}/>
+        <Leaderboard title="Top Rating" scores={world_leaderboard.world_top_rating}/>
       </div>
 </div>
           <p class='leader-link'>

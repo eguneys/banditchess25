@@ -1,13 +1,14 @@
 import { createContext, useContext, type JSX } from "solid-js";
 import { createStore } from "solid-js/store";
 import { create_replay, type ReplayActions, type ReplayState } from "./create_replay";
-import { create_leaderboard, type LeaderboardActions, type LeaderboardState } from "./create_leaderboard";
+import { create_leaderboard, type LeaderboardActions, type LeaderboardState, type WorldLeaderboardState } from "./create_leaderboard";
 
 type Actions = ReplayActions & LeaderboardActions
 
 type State = {
     replay: ReplayState
     leaderboard: LeaderboardState
+    world_leaderboard: WorldLeaderboardState
 }
 
 type Store = [State, Actions]
@@ -15,11 +16,12 @@ type Store = [State, Actions]
 export function StoreProvider(props: { children: JSX.Element}) {
 
     let [replay_state, replay_actions] = create_replay()
-    let [leaderboard_state, leaderboard_actions] = create_leaderboard()
+    let [world_leaderboard, leaderboard_state, leaderboard_actions] = create_leaderboard()
 
     let [state, _set_state] = createStore<State>({
         replay: replay_state,
-        leaderboard: leaderboard_state
+        leaderboard: leaderboard_state,
+        world_leaderboard
     })
 
     let actions = {

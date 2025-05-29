@@ -307,8 +307,8 @@ function WithStockfish() {
     const [top_score_entry_handle, set_top_score_entry_handle] = createSignal<string>('')
     const [top_score_entry_submitted, set_top_score_entry_submitted] = createSignal(false)
 
-    const top_score_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().classic])
-    const top_combo_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().combo])
+    const top_score_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().classic, Date.now()])
+    const top_combo_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().combo, Date.now()])
 
     const top_scores_highlight = createMemo(() => {
         if (!persist_state.game_result) {
@@ -386,6 +386,7 @@ function WithStockfish() {
         set_top_score_entry_handle(handle)
     }
 
+    add_top_combo(['hello', 0, Date.now()])
     const on_submit_handle_entry = () => {
         add_top_score(top_score_entry())
         add_top_combo(top_combo_entry())
@@ -406,6 +407,7 @@ function WithStockfish() {
 
 
     request_next_fen_or_end_the_game()
+
 
     return (<>
 

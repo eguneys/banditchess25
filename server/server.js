@@ -3,20 +3,22 @@ const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const crypto = require('node:crypto');
+const cors = require('cors')
 
 const app = express();
 const db = new sqlite3.Database('leaderboard.db');
 
-const PORT = process.env.PORT || 3000;
-const SECRET = process.env.SECRET_SALT
+const PORT = process.env.PORT || 3300;
+const SECRET = process.env.SECRET_SALT || 's3cr3t-s@lt'
 
 // Middleware
 app.use(bodyParser.json());
+app.use(cors())
 
 // Rate limiting: 1 request per 15 seconds per IP
 const limiter = rateLimit({
   windowMs: 15 * 1000,
-  max: 1,
+  max: 100,
   message: { error: 'Too many submissions. Try again soon.' }
 });
 app.use('/submit', limiter);
@@ -24,11 +26,17 @@ app.use('/submit', limiter);
 // Initialize database
 db.run(`
   CREATE TABLE IF NOT EXISTS leaderboard (
+    id TEXT PRIMARY KEY,
+    handle TEXT,
     combo TEXT,
-    handle TEXT PRIMARY KEY,
-    score INTEGER
+    score INTEGER,
+    created_at INTEGER
   )
 `);
+
+const gen_id = () => {
+  return Math.random().toString(16).slice(2, 10)
+}
 
 // Utility: Generate hash server-side
 function generateHash(handle, score) {
@@ -39,14 +47,14 @@ function generateHash(handle, score) {
 // GET /leaderboard - return top 10
 app.get('/leaderboard/combo', (req, res) => {
   let combo = 'combo'
-  db.all(`SELECT handle, score FROM leaderboard WHERE combo EQUALS ? ORDER BY score DESC LIMIT 10`, [combo], (err, rows) => {
+  db.all(`SELECT handle, score, created_at FROM leaderboard WHERE combo = ? ORDER BY score DESC LIMIT 10`, [combo], (err, rows) => {
     if (err) return res.status(500).json({ error: 'Database error' });
     res.json(rows);
   });
 });
 app.get('/leaderboard/score', (req, res) => {
   let combo = 'score'
-  db.all(`SELECT handle, score FROM leaderboard WHERE combo EQUALS ? ORDER BY score DESC LIMIT 10`, [combo], (err, rows) => {
+  db.all(`SELECT handle, score, created_at FROM leaderboard WHERE combo = ? ORDER BY score DESC LIMIT 10`, [combo], (err, rows) => {
     if (err) return res.status(500).json({ error: 'Database error' });
     res.json(rows);
   });
@@ -68,13 +76,13 @@ app.post('/submit', (req, res) => {
     return res.status(403).json({ error: 'Invalid hash' });
   }
 
+  const created_at = Date.now()
+
   // Insert or update if score is higher
   db.get(`SELECT score FROM leaderboard WHERE handle = ? AND combo = ?`, [handle, combo], (err, row) => {
     if (err) return res.status(500).json({ error: 'Database error' });
-
-      db.run(`INSERT INTO leaderboard (handle, score, combo) VALUES (?, ?, ?) 
-              ON CONFLICT(handle) DO UPDATE SET score = excluded.score`,
-          [handle, score, combo],
+      db.run(`INSERT INTO leaderboard (id, handle, score, combo, created_at) VALUES (?, ?, ?, ?, ?)`,
+          [gen_id(), handle, score, combo, created_at],
           (err) => {
               if (err) return res.status(500).json({ error: 'DB insert error' });
               res.json({ success: true });

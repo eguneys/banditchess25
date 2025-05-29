@@ -6,7 +6,7 @@ import { useStore } from '../../state'
 
 export default function() {
 
-    let [{leaderboard}] = useStore()
+    let [{world_leaderboard, leaderboard}] = useStore()
 
     return (<>
         <main class='leaderboards'>
@@ -15,8 +15,8 @@ export default function() {
             <section class='world'>
                 <h3>World</h3>
                 <div class='boards'>
-                    <Leaderboard title="Top Scores" scores={leaderboard.world_top_scores} />
-                    <Leaderboard title="Top Combos" scores={leaderboard.world_top_combos} />
+                    <Leaderboard title="Top Scores" scores={world_leaderboard.world_top_scores} />
+                    <Leaderboard title="Top Combos" scores={world_leaderboard.world_top_combos} />
                 </div>
             </section>
             <section class='personal'>
