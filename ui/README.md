@@ -8,16 +8,13 @@
 * [x] Game End Increase Match #
 * [x] Mate end Condition
 
-* [ ] Clear Local Storage
-* [ ] Stockfish Download Progress
-* [ ] Volume Control Settings
 
 * [ ] Game End Display Popup
 * [ ] Game End High Score Notification
 * [ ] Game End High Score Entry Ask Handle
 * [ ] Game End High Score Show Leaderboard
 * [ ] Game End, Game Begin, Game Restart, Transitions
-
+* [ ] Personal Best Scores
 
 * [ ] Timer
 * [ ] Time out end Condition
@@ -33,6 +30,12 @@
 * [ ] Audio Feedback
 * [ ] Audio Music
 * [ ] Difficulty Balance
+
+* [ ] Something to show on empty/beginning Replay move list
+
+* [ ] Clear Local Storage
+* [ ] Stockfish Download Progress
+* [ ] Volume Control Settings
 
 * [ ] Deploy Github Pages
 * [ ] Deploy Netlify
