@@ -17,32 +17,32 @@
 * [x] Vote Screen
 * [x] Feedback Screen
 
-* [ ] High scores page, top scores vs personal scores
+* [x] High scores page, top scores vs personal scores
 
-* [ ] Game End, Game Begin, Game Restart, Transitions
 
-* [ ] Timer
-* [ ] Time out end Condition
+* [ ] Clear Local Storage
+* [ ] Stockfish Download Progress
+* [ ] Volume Control Settings
 
+* [ ] Audio Feedback
+* [ ] Audio Music
+* [ ] Difficulty Balance
 
 * [ ] Leaderboard API Endpoint
 * [ ] Vote API Endpoint
 * [ ] Feedback API Endpoint
 * [ ] Leaderboard Display
 
-* [ ] Audio Feedback
-* [ ] Audio Music
-* [ ] Difficulty Balance
-
-* [ ] Something to show on empty/beginning Replay move list
-
-* [ ] Clear Local Storage
-* [ ] Stockfish Download Progress
-* [ ] Volume Control Settings
-
 * [ ] Deploy Github Pages
 * [ ] Deploy Netlify
 * [ ] Deploy Google Cloud
+
+
+## Disposable
+
+* [ ] Timer
+* [ ] Time out end Condition
+* [ ] Something to show on empty/beginning Replay move list
 
 
 ## Future
@@ -60,7 +60,7 @@
 * [ ] Animated Restart Transition
 * [ ] Animated Page Transitions
 * [ ] Score Delta More Visuals And Waiting Time Indication
-
+* [ ] Game End, Game Begin, Game Restart, Transitions
 
 
 * [ ] More Visuals
