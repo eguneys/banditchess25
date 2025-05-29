@@ -1,4 +1,4 @@
-import { Chess, makeUci, parseUci, Position } from "chessops"
+import { Chess, makeUci, opposite, parseUci, Position } from "chessops"
 import { INITIAL_FEN, makeFen, parseFen } from "chessops/fen"
 import { parseSan } from "chessops/san"
 
@@ -29,7 +29,7 @@ export const fen_after_uci = (fen: FEN, uci: UCI) => {
     pos.play(parseUci(uci)!)
     return makeFen(pos.toSetup())
 }
-export const fen_winner = (fen: FEN) => fen_pos(fen).isCheckmate() ? fen_turn(fen) : undefined
+export const fen_winner = (fen: FEN) => fen_pos(fen).isCheckmate() ? opposite(fen_turn(fen)) : undefined
 
 export function initial_step_play_san(san: SAN, initial_fen = INITIAL_FEN): Step {
     let pos = fen_pos(initial_fen)

@@ -218,7 +218,6 @@ main.vs {
             }
 
 
-
           .list-wrap {
             overflow-y: scroll;
             /* https://stackoverflow.com/questions/70198644/overflow-scroll-on-div-with-flex-1-without-specific-height */
@@ -289,8 +288,51 @@ main.vs {
                     }
                 }
             }
+
+
+
+            .result {
+                flex: 1 0 100%;
+                display: flex;
+                flex-flow: column;
+
+                font-size: .9em;
+
+                .over {
+                    padding: 0.5em;
+                    text-transform: uppercase;
+                    align-self: center;
+                    font-weight: bold;
+                    font-size: 1.1em;
+                }
+
+                .lose, .win {
+                    display: flex;
+                    flex-flow: column;
+
+                    .header {
+                        text-align: center;
+                        font-size: 1.3em;
+                    }
+
+                    .scores {
+                        justify-content: space-around;
+                    }
+
+
+                    .note {
+                        font-size: 0.8em;
+                        height: 1em;
+
+                    }
+                }
+
+                .score,.combo {
+                    font-size: .9em;
+                }
+            }
         }
-    }
+        }
 
         .scores {
             display: flex;

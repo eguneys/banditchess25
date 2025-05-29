@@ -1,0 +1,170 @@
+.sliced-text {
+    color: black;
+    position: relative;
+    background: linear-gradient(transparent 50%, #000 50%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    &::after {
+        content: attr(data-heading);
+        position: absolute;
+        background: linear-gradient(#000 50%, transparent 50%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        left: 50%;
+        transform: translate(-50%, -2px);
+        animation: fracture 2s infinite cubic-bezier(0.075, 0.82, 0.165, 1);
+    }
+}
+
+@keyframes fracture {
+    0% {
+        transform: translate(calc(-50% + 0px), -2px);
+    }
+
+    80% {
+        transform: translate(calc(-50% - 20px), -2px);
+    }
+}
+
+
+/* https://stackoverflow.com/questions/45847392/pure-css-continuous-horizontal-text-scroll-without-break */
+                .marquee {
+                    width: 100%;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    position: absolute;
+                }
+
+                .marquee span {
+                    display: inline-block;
+                    padding-left: 100%;
+                    animation: marquee 5s linear infinite;
+                }
+
+                .marquee2 span {
+                    animation-delay: 2.5s;
+                }
+
+                @keyframes marquee {
+                    0% {
+                        transform: translate(0, 0);
+                    }
+
+                    100% {
+                        transform: translate(-100%, 0);
+                    }
+                }
+
+
+
+
+.title {
+  font-size: var(--fs);
+  font-weight: 800;
+  letter-spacing: var(--ls);
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  margin: 0;
+}
+
+.aurora-text {
+
+  --bg: #000000;
+  --clr-1: #00c2ff;
+  --clr-2: #33ff8c;
+  --clr-3: #ffc640;
+  --clr-4: #e54cff;
+
+  --blur: 0.3rem;
+
+    background-color: black;
+    color: #fff;
+}
+
+.aurora {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  mix-blend-mode: darken;
+  pointer-events: none;
+}
+
+.aurora__item {
+  overflow: hidden;
+  position: absolute;
+  width: 60vw;
+  height: 60vw;
+  background-color: var(--clr-1);
+  border-radius: 37% 29% 27% 27% / 28% 25% 41% 37%;
+  filter: blur(var(--blur));
+  mix-blend-mode: overlay;
+}
+
+.aurora__item:nth-of-type(1) {
+  top: -50%;
+  animation: aurora-border 6s ease-in-out infinite,
+    aurora-1 6s ease-in-out infinite alternate;
+}
+
+.aurora__item:nth-of-type(2) {
+  background-color: var(--clr-3);
+  right: 0;
+  top: 0;
+  animation: aurora-border 6s ease-in-out infinite,
+    aurora-2 6s ease-in-out infinite alternate;
+}
+
+.aurora__item:nth-of-type(3) {
+  background-color: var(--clr-2);
+  left: 0;
+  bottom: 0;
+  animation: aurora-border 6s ease-in-out infinite,
+    aurora-3 4s ease-in-out infinite alternate;
+}
+
+.aurora__item:nth-of-type(4) {
+  background-color: var(--clr-4);
+  right: 0;
+  bottom: -50%;
+  animation: aurora-border 6s ease-in-out infinite,
+    aurora-4 12s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-1 {
+  0% {
+    top: 0;
+    right: 0;
+  }
+
+  50% {
+    top: 100%;
+    right: 75%;
+  }
+
+  75% {
+    top: 100%;
+    right: 25%;
+  }
+
+  100% {
+    top: 0;
+    right: 0;
+  }
+}
+
+@keyframes aurora-2 {
+  0% {
+    top: -50%;
+    left: 0%;
+  }
+
+  60% {
+    top: 100%;
+    left: 75%;
+  }
+}

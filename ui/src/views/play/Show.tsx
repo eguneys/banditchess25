@@ -1,4 +1,4 @@
-import { batch, createComputed, createEffect, createMemo, createSignal, For, on } from 'solid-js'
+import { batch, children, createComputed, createEffect, createMemo, createSignal, For, type JSX, on, Show } from 'solid-js'
 import { non_passive_on_wheel, PlayUciBoard } from '../../components/PlayUciBoard'
 import { useStore } from '../../state'
 import { StockfishProvider, useStockfish, type MultiPV } from '../../state/stockfish'
@@ -11,6 +11,7 @@ import { MeetButton } from '../../components/MeetButton'
 import { useNavigate } from '@solidjs/router'
 import { arr_rnd, rnd_sign } from '../../game/random'
 import { opposite, parseSquare } from 'chessops'
+import { AuroraText, SlicedText } from '../../components/TextEffects'
 
 export default function() {
 
@@ -80,12 +81,14 @@ function WithStockfish() {
     const color = () => persist_state.color
     const engine_color = () => opposite(color())
 
-    const movable = () => persist_state.game_result === undefined
 
     const steps = createMemo(() => state.replay.list)
 
     const fen = createMemo(() => state.replay.fen)
     const last_move = createMemo(() => state.replay.last_move)
+
+    const eval_scored = createMemo(() => persist_state.fen_pvs[fen()] !== undefined)
+    const movable = () => persist_state.game_result === undefined && eval_scored()
 
     initialize_replay(persist_state.sans, persist_state.cursor_path)
 
@@ -193,7 +196,6 @@ function WithStockfish() {
 
         set_persist_state("fen_pvs", f, pvs)
 
-        console.log('resolved', f)
         if (f === fen() && fen_turn(f) === engine_color()) {
             let pv = select_engine_pv(pvs)
 
@@ -264,7 +266,6 @@ function WithStockfish() {
     createComputed(on(() => {
         let pvs = stockfish.pvs[fen()]
 
-        console.log('dep', fen(), pvs)
         if (pvs) {
             let res: [FEN, MultiPV] = [fen(), pvs]
             return res
@@ -275,6 +276,7 @@ function WithStockfish() {
 
     let white_scores = createMemo(() => scores_for_color('white'))
     let black_scores = createMemo(() => scores_for_color('black'))
+    let player_scores = createMemo(() => color() === 'white' ? white_scores() : black_scores())
 
     return (<>
     <main class='vs'>
@@ -299,7 +301,11 @@ function WithStockfish() {
                     <span class='time'>0:00</span>
                 </div>
                 <div class='replay'>
-                    <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()} deltas={score_deltas()} />
+                    <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()} deltas={score_deltas()}>
+                        <Show when={persist_state.game_result}>{ result => 
+                            <GameResultOnReplay win={result()[1] === color()} score={player_scores().classic} combo={player_scores().combo} />
+                        }</Show>
+                    </ReplaySingle>
                     <div class='scores'>
                         <ScoreDelta small={color()==="black"} flip={true} skip={score_add_skip_opening()} scores={white_scores()} />
                         <ScoreDelta small={color()==="white"} flip={false} skip={score_add_skip_opening()} scores={black_scores()} />
@@ -320,6 +326,37 @@ function WithStockfish() {
         </div>
 
     </main>
+    </>)
+}
+
+
+function GameResultOnReplay(props: { score: number, combo: number, win: boolean }) {
+
+    return (<>
+    <div class='result'>
+        <span class='over'>Game Over</span>
+
+        <Show when={props.win} fallback={
+            <div class='lose'>
+                <span class='header'><SlicedText text='You lost'></SlicedText></span>
+            </div>
+        }>
+        <div class='win'>
+           <span class='header'><AuroraText text="You Win!"></AuroraText></span>
+           <div class='scores'>
+           <span class='score'>Score: {props.score}</span>
+           <span class='combo'>Combo: {props.combo}</span>
+           </div>
+
+            <div class='note'>
+                <div class='marquee'> <span>Personal Best Achieved.</span> </div>
+            </div>
+            <div class='note2'>
+                <div class='marquee'> <span>Top Leaderboard Achieved.</span> </div>
+            </div>
+        </div>
+        </Show>
+    </div>
     </>)
 }
 
@@ -439,7 +476,7 @@ function score_pv(pvs: MultiPV, uci: UCI) {
     return pvs.length - i - 1
 }
 
-function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_path: Path, steps: Step[], deltas: (number | undefined)[] }) {
+function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_path: Path, steps: Step[], deltas: (number | undefined)[], children: JSX.Element }) {
 
 
     let $moves_el: HTMLDivElement
@@ -457,10 +494,16 @@ function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_pat
             return
         }
 
+        if (c() !== undefined) {
+            cont.scrollTop = 99999
+            return
+        }
+
         let top = target.offsetTop - cont.offsetHeight / 2 + target.offsetHeight
         cont.scrollTo({ behavior: 'smooth', top })
     })
 
+    let c = children(() => props.children)
     return (<>
         <div class='list-wrap'>
             <div ref={el => { $moves_el = el }} class='list'>
@@ -468,6 +511,7 @@ function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_pat
                 <Step {...props} is_opening={i() < 10} delta={props.deltas[i()]} step={step} />
                 }</For>
                 <div class='padding'></div>
+                {c()}
             </div>
         </div>
         <div class='padding'></div>
