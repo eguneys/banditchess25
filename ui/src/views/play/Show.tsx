@@ -4,7 +4,7 @@ import { useStore } from '../../state'
 import { StockfishProvider, useStockfish, type MultiPV } from '../../state/stockfish'
 import './Show.scss'
 import type { Color, FEN, Key } from 'chessground/types'
-import { fen_is_end, fen_pos, fen_turn, fen_winner, type Path, type SAN, type Step, type UCI } from '../../components/step_types'
+import { fen_is_end, fen_is_over_40, fen_pos, fen_turn, fen_winner, type Path, type SAN, type Step, type UCI } from '../../components/step_types'
 import { makePersisted } from '@solid-primitives/storage'
 import { createStore, reconcile } from 'solid-js/store'
 import { MeetButton } from '../../components/MeetButton'
@@ -24,7 +24,7 @@ export default function() {
     </>)
 }
 
-type GameResultType = 'game-ended'
+type GameResultType = 'game-ended' | '40-reached'
 type GameResult = [GameResultType, Color | undefined]
 
 type StockfishVSSave = {
@@ -231,6 +231,10 @@ function WithStockfish() {
             let result: GameResult = ['game-ended', fen_winner(fen())]
             set_persist_state('game_result', result)
             set_open_new_high_score_modal(personal_best_achieved() !== undefined)
+        } else if (fen_is_over_40(fen())) {
+            let result: GameResult = ['40-reached', undefined]
+            set_persist_state('game_result', result)
+            set_open_new_high_score_modal(personal_best_achieved() !== undefined)
         } else {
             request_multipv(fen())
         }
@@ -288,8 +292,8 @@ function WithStockfish() {
     const [top_score_entry_handle, set_top_score_entry_handle] = createSignal<string>('')
     const [top_score_entry_submitted, set_top_score_entry_submitted] = createSignal(false)
 
-    const top_score_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().classic + 10])
-    const top_combo_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().combo + 10])
+    const top_score_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().classic])
+    const top_combo_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().combo])
 
     const top_scores_highlight = createMemo(() => {
         if (!persist_state.game_result) {
@@ -415,7 +419,7 @@ function WithStockfish() {
                 <div class='replay'>
                     <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()} deltas={score_deltas()}>
                         <Show when={persist_state.game_result}>{ result => 
-                            <GameResultOnReplay top={personal_best_achieved()!== undefined} win={result()[1] === color()} score={player_scores().classic} combo={player_scores().combo} />
+                            <GameResultOnReplay result={result()[0]} top={personal_best_achieved()!== undefined} win={result()[1] === color()} score={player_scores().classic} combo={player_scores().combo} />
                         }</Show>
                     </ReplaySingle>
                     <div class='scores'>
@@ -512,12 +516,20 @@ function VoteFeedback(props: { onSkip: () => void, onClose: () => void }) {
 
 
 
-function GameResultOnReplay(props: { score: number, combo: number, win: boolean, top: boolean }) {
+function GameResultOnReplay(props: { result: GameResultType, score: number, combo: number, win: boolean, top: boolean }) {
 
     return (<>
     <div class='result'>
         <span class='over'>Game Over</span>
+        <small>
+            <Show when={props.result ==='40-reached'}>
+                Move 40 reached.
+            </Show>
 
+            <Show when={props.result ==='game-ended'}>
+                There has been a checkmate.
+            </Show>
+        </small>
         <Show when={props.win} fallback={
             <div class='lose'>
                 <span class='header'><SlicedText text='You lost'></SlicedText></span>

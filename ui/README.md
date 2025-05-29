@@ -8,19 +8,22 @@
 * [x] Game End Increase Match #
 * [x] Mate end Condition
 
+* [x] Game End Display Popup
+* [x] Game End High Score Notification
+* [x] Game End High Score Entry Ask Handle
+* [x] Game End High Score Show Leaderboard
+* [x] Personal Best Scores
 
-* [ ] Game End Display Popup
-* [ ] Game End High Score Notification
-* [ ] Game End High Score Entry Ask Handle
-* [ ] Game End High Score Show Leaderboard
+* [x] Vote Screen
+* [x] Feedback Screen
+
+* [ ] High scores page, top scores vs personal scores
+
 * [ ] Game End, Game Begin, Game Restart, Transitions
-* [ ] Personal Best Scores
 
 * [ ] Timer
 * [ ] Time out end Condition
 
-* [ ] Vote Screen
-* [ ] Feedback Screen
 
 * [ ] Leaderboard API Endpoint
 * [ ] Vote API Endpoint

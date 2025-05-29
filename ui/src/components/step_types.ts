@@ -30,6 +30,7 @@ export const fen_after_uci = (fen: FEN, uci: UCI) => {
     return makeFen(pos.toSetup())
 }
 export const fen_winner = (fen: FEN) => fen_pos(fen).isCheckmate() ? opposite(fen_turn(fen)) : undefined
+export const fen_is_over_40 = (fen: FEN) => { return fen_pos(fen).fullmoves > 40 } 
 
 export function initial_step_play_san(san: SAN, initial_fen = INITIAL_FEN): Step {
     let pos = fen_pos(initial_fen)

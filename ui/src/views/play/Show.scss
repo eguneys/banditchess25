@@ -375,11 +375,15 @@ main.vs {
                 font-size: .9em;
 
                 .over {
-                    padding: 0.5em;
+                    padding-top: 0.5em;
                     text-transform: uppercase;
                     align-self: center;
                     font-weight: bold;
                     font-size: 1.1em;
+                }
+
+                small {
+                    margin: auto;
                 }
 
                 .lose, .win {
