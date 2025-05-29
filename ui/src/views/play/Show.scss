@@ -480,6 +480,10 @@ main.vs {
             padding: 0.2em;
             align-items: flex-end;
 
+            .time {
+                color: gray;
+                opacity: .8;
+            }
         }
 
         .score-delta {
