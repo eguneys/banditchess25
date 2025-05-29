@@ -12,6 +12,9 @@ export function find_score_entry_index(scores: (Score | undefined)[], score: Sco
 export type LeaderboardState = {
     top_scores: (Score | undefined)[],
     top_combos: (Score | undefined)[]
+    world_top_scores: (Score | undefined)[],
+    world_top_combos: (Score | undefined)[]
+    world_top_rating: (Score | undefined)[]
 }
 
 export type LeaderboardActions = {
@@ -24,8 +27,11 @@ export function create_leaderboard(): [LeaderboardState, LeaderboardActions] {
     let [state, set_state] = makePersisted(createStore<LeaderboardState>({
         top_scores: pad_7([]),
         top_combos: pad_7([]),
+        world_top_scores: pad_7([]),
+        world_top_combos: pad_7([]),
+        world_top_rating: pad_7([]),
     }), {
-        name: '.banditchess.top_scores.v0'
+        name: '.banditchess.top_scores.v2'
     })
 
     let actions = {

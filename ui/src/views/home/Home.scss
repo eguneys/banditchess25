@@ -30,13 +30,21 @@ main.bandit {
     }
 
 
-    .leaderboard {
+    .leaderboards {
+        .categories {
         margin-left: 0.5em;
         display: flex;
         gap: 6em;
-
         .category.disabled {
             color: gray;
         }
-    }
+
+
+        }
+
+        .leader-link {
+            margin-left: 8em;
+        }
+        }
+
 }

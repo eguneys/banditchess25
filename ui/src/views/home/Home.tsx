@@ -1,8 +1,8 @@
 import { A, useNavigate } from "@solidjs/router"
-import { For, Show } from "solid-js"
 import './Home.scss'
 import { MeetButton } from "../../components/MeetButton"
-import { pad_7 } from "../../game/util"
+import { Leaderboard } from "../../components/Leaderboard"
+import { useStore } from "../../state"
 
 export default function Home() {
   
@@ -13,9 +13,7 @@ export default function Home() {
     navigate('vs')
   }
 
-  const top_combo_scores = () => pad_7([])
-  const top_scores = () => pad_7([])
-  const top_rating = () => pad_7([])
+  const [{leaderboard}] = useStore()
 
   return (<>
   <main class='bandit'>
@@ -33,50 +31,31 @@ export default function Home() {
       <MeetButton draw={true} disabled={true}>Play vs People</MeetButton>
     </div>
 
-    <div class='leaderboard'>
+    <div class='leaderboards'>
+      <div class='categories'>
       <div class='category'>
-        <h4>Top Combo Scores</h4>
-          <ul>
-            <For each={top_combo_scores()}>{top =>
-              <li class='top'>
-                <Show when={top} fallback={<span>--</span>}>{top =>
-                  <div class='user'>Top user {top()} </div>
-                }</Show>
-              </li>
-            }</For>
-        </ul>
+        <Leaderboard title="Top Combo Scores" scores={leaderboard.world_top_combos}/>
       </div>
       <div class='category'>
-        <h4>Top Scores</h4>
-          <ul>
-            <For each={top_scores()}>{top =>
-              <li class='top'>
-                <Show when={top} fallback={<span>--</span>}>{top =>
-                  <div class='user'>Top user {top()} </div>
-                }</Show>
-              </li>
-            }</For>
-        </ul>
+        <Leaderboard title="Top Scores" scores={leaderboard.world_top_scores}/>
       </div>
       <div classList={{disabled: true}} class='category'>
-        <h4>Top Rating</h4>
-          <ul>
-            <For each={top_rating()}>{top =>
-              <li class='top'>
-                <Show when={top} fallback={<span>--</span>}>{top =>
-                  <div class='user'>Top user {top()} </div>
-                }</Show>
-              </li>
-            }</For>
-        </ul>
+        <Leaderboard title="Top Rating" scores={leaderboard.world_top_rating}/>
       </div>
-    </div>
+</div>
+          <p class='leader-link'>
+            <A href='top'>More Leaderboards</A>
+          </p>
+        </div>
+
     <small>
       Combo Scores is a separate score category where streaks earn extra points.
       <br/>
       The first 6 moves are not scored to skip opening theory.
       <br/>
       You have to win the game to be eligible for leaderboards.
+      <br/>
+      Game ends when move 40 is reached, or a checkmate happens.
     </small>
     <footer>
       <A href="/about">About</A>

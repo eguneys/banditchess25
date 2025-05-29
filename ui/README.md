@@ -47,6 +47,8 @@
 
 ## Future
 
+* [ ] Daily Leaderboard
+
 * [ ] 3-fold Repetition Condition
 
 * [ ] Categorize Openings

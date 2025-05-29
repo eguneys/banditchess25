@@ -478,7 +478,7 @@ function HighScoreReview(props: { onBackToGame: () => void }) {
 
     let navigate = useNavigate()
     const on_see_highscores = () => {
-        navigate('/')
+        navigate('/top')
     }
 
     return (<>

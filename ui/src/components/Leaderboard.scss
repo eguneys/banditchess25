@@ -20,6 +20,7 @@
     .list {
         display: flex;
         flex-flow: column;
+        min-width: 120px;
 
         .item {
             display: flex;

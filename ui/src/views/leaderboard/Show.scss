@@ -1,0 +1,26 @@
+main.leaderboards {
+    display: flex;
+    flex-flow: column;
+    .content {
+        display: flex;
+section {
+        display: flex;
+        flex-flow: column;
+
+        .boards {
+            display: flex;
+            gap: 1em;
+        }
+
+        padding: 0 1em;
+        border-right: 1px solid black;
+        &:last-child {
+            border-right: none;
+        }
+    }
+
+}
+    a {
+        align-self: flex-end;
+    }
+}
