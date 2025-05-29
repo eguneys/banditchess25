@@ -14,6 +14,7 @@ import { opposite, parseSquare } from 'chessops'
 import { AuroraText, MarqueeText, SlicedText } from '../../components/TextEffects'
 import { find_score_entry_index, type Score } from '../../state/create_leaderboard'
 import { Leaderboard } from '../../components/Leaderboard'
+import type { Vote } from '../../state/create_feedback'
 
 export const PERSIST_NAME_PLAY_SHOW_STATE = '.banditchess.vs-stockfish-save.v0'
 
@@ -69,7 +70,8 @@ function WithStockfish() {
         add_uci_and_goto_it, 
         set_cursor_path,
         goto_next_path_if_can,
-        goto_prev_path_if_can
+        goto_prev_path_if_can,
+        submit_vote
     }] = useStore()
 
     const [persist_state, set_persist_state] = makePersisted(createStore<StockfishVSSave>({
@@ -386,7 +388,7 @@ function WithStockfish() {
         set_top_score_entry_handle(handle)
     }
 
-    add_top_combo(['hello', 0, Date.now()])
+    //add_top_combo(['hello', 0, Date.now()])
     const on_submit_handle_entry = () => {
         add_top_score(top_score_entry())
         add_top_combo(top_combo_entry())
@@ -405,6 +407,11 @@ function WithStockfish() {
         set_persist_state('show_vote', false)
     }
 
+    //submit_vote('hello', 'yes')
+    const on_close_vote = (vote: Vote) => {
+        submit_vote(top_score_entry_handle(), vote)
+        set_show_vote_feedback(false)
+    }
 
     request_next_fen_or_end_the_game()
 
@@ -477,7 +484,7 @@ function WithStockfish() {
                             <Show when={show_vote_feedback()} fallback={
                                 <HighScoreReview onBackToGame={on_back_to_game} onGoHighscores={on_go_highscores} />
                             }>
-                                    <VoteFeedback onSkip={on_skip_feedback} onClose={() => set_show_vote_feedback(false)}/>
+                                    <VoteFeedback onSkip={on_skip_feedback} onClose={on_close_vote}/>
                             </Show>
                          </Show>
 
@@ -509,15 +516,13 @@ function HighScoreReview(props: { onBackToGame: () => void, onGoHighscores: () =
     </>)
 }
 
-type Vote = 'yes' | 'no' | 'skip'
-
-function VoteFeedback(props: { onSkip: () => void, onClose: () => void }) {
+function VoteFeedback(props: { onSkip: () => void, onClose: (vote: Vote) => void }) {
 
     const submit = (vote: Vote) => {
         if (vote === 'skip') {
             props.onSkip()
         }
-        props.onClose()
+        props.onClose(vote)
     }
 
     return (<>

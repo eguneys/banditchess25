@@ -118,11 +118,10 @@ type LeaderboardAgent = {
     submit_combo(score: Score): Promise<void>
 }
 
+export const API_ENDPOINT = import.meta.env.DEV ? `http://localhost:3300` : ``
+export const $ = (path: string, opts?: RequestInit) => fetch(API_ENDPOINT + path, opts).then(_ => _.json())
+
 function create_agent(): LeaderboardAgent {
-
-    const API_ENDPOINT = import.meta.env.DEV ? `http://localhost:3300` : ``
-    const $ = (path: string, opts?: RequestInit) => fetch(API_ENDPOINT + path, opts).then(_ => _.json())
-
 
     // Obfuscated-ish hash generator using a simplified SHA-256 via SubtleCrypto
     async function generateHash(handle: string, score: number) {

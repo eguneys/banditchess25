@@ -22,6 +22,7 @@ const limiter = rateLimit({
   message: { error: 'Too many submissions. Try again soon.' }
 });
 app.use('/submit', limiter);
+app.use('/vote', limiter);
 
 // Initialize database
 db.run(`
@@ -33,6 +34,17 @@ db.run(`
     created_at INTEGER
   )
 `);
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS votes (
+    id TEXT PRIMARY KEY,
+    handle TEXT,
+    vote TEXT,
+    created_at INTEGER
+  )
+`);
+
+
 
 const gen_id = () => {
   return Math.random().toString(16).slice(2, 10)
@@ -90,6 +102,28 @@ app.post('/submit', (req, res) => {
       );
   });
 });
+
+
+
+// POST /submit - submit score
+app.post('/vote', (req, res) => {
+  const { handle, vote } = req.body;
+
+  if (!handle || handle.length > 8) {
+    return res.status(400).json({ error: 'Invalid data' });
+  }
+
+  const created_at = Date.now()
+
+  db.run(`INSERT INTO votes (id, handle, vote, created_at) VALUES (?, ?, ?, ?)`,
+    [gen_id(), handle, vote, created_at],
+    (err) => {
+      if (err) return res.status(500).json({ error: 'DB insert error' });
+      res.json({ success: true });
+    }
+  );
+});
+
 
 // Start server
 app.listen(PORT, () => {
