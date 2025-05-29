@@ -285,6 +285,7 @@ function WithStockfish() {
             <div class='p1'></div>
             <div class='p2'></div>
         </div>
+
         <div class='content'>
             <div class='info'>
                 <h3>Bandit vs Stockfish</h3>

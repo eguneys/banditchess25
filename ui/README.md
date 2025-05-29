@@ -44,6 +44,8 @@
 
 ## Future
 
+* [ ] 3-fold Repetition Condition
+
 * [ ] Categorize Openings
 * [ ] Show opening on Main UI
 * [ ] Show opening on Game End Screen

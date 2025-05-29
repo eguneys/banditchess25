@@ -5,31 +5,40 @@ main.vs {
     padding: 1em;
     overflow: hidden;
 
+    .modal-overlay {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.7);
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
     .background {
         z-index: -1;
         pointer-events: none;
         position: fixed;
-        width: 400%;
-        height: 400%;
+        width: 180%;
+        height: 180%;
         overflow-x: hidden;
         overflow-y: hidden;
 
-        animation: 100s slide-in infinite;
+        transform: translate(-20%, -20%);
 
         @keyframes slide-in {
             0%,100% {
-                transform: translate(-1%, -1%);
+                transform: translate(-14%, -14%);
             }
         
             50% {
-                transform: translate(-14%, -14%);
+                transform: translate(-20%, -20%);
             }
         }
 
         .p1 {
             aspect-ratio: 1/2;
             position: absolute;
-            width: 14%;
+            width: 100%;
 
             opacity: .7;
             -webkit-mask-image: -webkit-gradient(linear, left top, right top,
@@ -40,15 +49,19 @@ main.vs {
             from(rgba(0,0,0,1)), 
             color-stop(0.9, rgba(0, 0, 0, 1)),
             to(rgba(0,0,0,0)));
+        animation: 444s slide-in infinite;
+        will-change: transform;
         }
 
         .p2 {
+
+        will-change: transform;
             aspect-ratio: 1;
             position: absolute;
             width: 100%;
-            transform: translate(14%, 0);
 
             opacity: .7;
+        animation: 333s slide-in infinite;
 
             -webkit-mask-image: -webkit-gradient(linear, right top, left top,
             from(rgba(0,0,0,1)), 
