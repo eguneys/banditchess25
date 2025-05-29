@@ -62,8 +62,6 @@ export function create_replay(): [ReplayState, ReplayActions] {
 
         },
         add_uci_and_goto_it(uci: UCI) {
-
-            console.log('add uci', uci)
             let list = state.list
 
             let pos = fen_pos(state.fen)

@@ -1,0 +1,37 @@
+.leaderboard {
+    flex: 1;
+    .highlight {
+        animation: .5s flash linear infinite;
+    }
+
+    @keyframes flash {
+        16% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
+        84% {
+            opacity: 1;
+        }
+    }
+
+
+    .list {
+        display: flex;
+        flex-flow: column;
+
+        .item {
+            display: flex;
+            gap: 0.5em;
+            .nb {
+                font-weight: bold;
+            }
+                .entry {
+                    display: flex;
+                    flex: 1;
+                    justify-content: space-between;
+                }
+            }
+        }
+}

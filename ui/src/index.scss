@@ -11,6 +11,13 @@
     src: url('./Saira-VariableFont_wdth,wght.ttf');
 }
 
+html {
+  min-height: 100vh;
+  flex-flow: column;
+  display: flex;
+  justify-content: center;
+}
+
 body {
     font-family: 'Saira';
     background: #aa2;

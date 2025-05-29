@@ -11,7 +11,9 @@ import { MeetButton } from '../../components/MeetButton'
 import { useNavigate } from '@solidjs/router'
 import { arr_rnd, rnd_sign } from '../../game/random'
 import { opposite, parseSquare } from 'chessops'
-import { AuroraText, SlicedText } from '../../components/TextEffects'
+import { AuroraText, MarqueeText, SlicedText } from '../../components/TextEffects'
+import { find_score_entry_index, type Score } from '../../state/create_leaderboard'
+import { Leaderboard } from '../../components/Leaderboard'
 
 export default function() {
 
@@ -32,6 +34,7 @@ type StockfishVSSave = {
     game_result: GameResult | undefined
     color: Color
     fen_pvs: Record<FEN, MultiPV>
+    show_vote: boolean
 }
 
 
@@ -65,9 +68,10 @@ function WithStockfish() {
         sans: [],
         cursor_path: '',
         game_result: undefined,
-        fen_pvs: {}
+        fen_pvs: {},
+        show_vote: true
     }), {
-        name: '.banditchess.vs_stockfish_save.v4'
+        name: '.banditchess.vs_stockfish_save.v5'
     })
 
     const nth = () => persist_state.nth
@@ -226,6 +230,7 @@ function WithStockfish() {
         if (fen_is_end(fen())) {
             let result: GameResult = ['game-ended', fen_winner(fen())]
             set_persist_state('game_result', result)
+            set_open_new_high_score_modal(personal_best_achieved() !== undefined)
         } else {
             request_multipv(fen())
         }
@@ -272,11 +277,116 @@ function WithStockfish() {
         }
     }, on_fen_eval_request_resolved))
 
-    request_next_fen_or_end_the_game()
 
     let white_scores = createMemo(() => scores_for_color('white'))
     let black_scores = createMemo(() => scores_for_color('black'))
     let player_scores = createMemo(() => color() === 'white' ? white_scores() : black_scores())
+
+    let [{ leaderboard }, { add_top_score, add_top_combo }] = useStore()
+
+
+    const [top_score_entry_handle, set_top_score_entry_handle] = createSignal<string>('')
+    const [top_score_entry_submitted, set_top_score_entry_submitted] = createSignal(false)
+
+    const top_score_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().classic + 10])
+    const top_combo_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().combo + 10])
+
+    const top_scores_highlight = createMemo(() => {
+        if (!persist_state.game_result) {
+            return undefined
+        }
+
+        if (persist_state.game_result[1] !== color()) {
+            return undefined
+        }
+
+        let i = find_score_entry_index(leaderboard.top_scores, top_score_entry())
+        if (i === -1) {
+            return undefined
+        }
+        return i
+    })
+
+    const top_combos_highlight = createMemo(() => {
+        if (!persist_state.game_result) {
+            return undefined
+        }
+
+        if (persist_state.game_result[1] !== color()) {
+            return undefined
+        }
+
+        let i = find_score_entry_index(leaderboard.top_combos, top_combo_entry())
+        if (i === -1) {
+            return undefined
+        }
+        return i
+    })
+
+    function replace_highlight_entry(scores: (Score | undefined)[], i: number, entry: Score) {
+        scores = scores.slice(0)
+        scores.splice(i, 0, entry)
+        scores.pop()
+        return scores
+    }
+
+
+    const top_scores = createMemo(() => {
+        let i_scores = top_scores_highlight()
+        if (i_scores === undefined) {
+            return undefined
+        }
+        if (top_score_entry_submitted()) {
+            return leaderboard.top_scores
+        }
+        return replace_highlight_entry(leaderboard.top_scores, i_scores, top_score_entry()!)
+    })
+
+    const top_combos = createMemo(() => {
+        let i_scores = top_combos_highlight()
+        if (i_scores === undefined) {
+            return undefined
+        }
+        if (top_score_entry_submitted()) {
+            return leaderboard.top_combos
+        }
+        return replace_highlight_entry(leaderboard.top_combos, i_scores, top_combo_entry()!)
+    })
+
+    const personal_best_achieved = createMemo(() => top_scores() || top_combos())
+
+    const [open_new_high_score_modal, set_open_new_high_score_modal] = createSignal(false)
+
+
+    /*
+    set_persist_state('game_result', ['game-ended', 'black'])
+    set_open_new_high_score_modal(true)
+    */
+
+    const on_handle_changed = (handle: string) => {
+        set_top_score_entry_handle(handle)
+    }
+
+    const on_submit_handle_entry = () => {
+        add_top_score(top_score_entry())
+        add_top_combo(top_combo_entry())
+        set_top_score_entry_submitted(true)
+    }
+
+    const [show_vote_feedback, set_show_vote_feedback] = createSignal(persist_state.show_vote)
+
+
+    const on_back_to_game = () => {
+        set_open_new_high_score_modal(false)
+        set_top_score_entry_submitted(false)
+    }
+
+    const on_skip_feedback = () => {
+        set_persist_state('show_vote', false)
+    }
+
+
+    request_next_fen_or_end_the_game()
 
     return (<>
 
@@ -305,7 +415,7 @@ function WithStockfish() {
                 <div class='replay'>
                     <ReplaySingle onSetCursorPath={set_cursor_path} cursor_path={state.replay.cursor_path} steps={steps()} deltas={score_deltas()}>
                         <Show when={persist_state.game_result}>{ result => 
-                            <GameResultOnReplay win={result()[1] === color()} score={player_scores().classic} combo={player_scores().combo} />
+                            <GameResultOnReplay top={personal_best_achieved()!== undefined} win={result()[1] === color()} score={player_scores().classic} combo={player_scores().combo} />
                         }</Show>
                     </ReplaySingle>
                     <div class='scores'>
@@ -327,12 +437,82 @@ function WithStockfish() {
             </div>
         </div>
 
+        <Show when={open_new_high_score_modal()}>
+        <div class='modal-overlay'>
+            <div class='modal'>
+                    <div class='game-over-popup'>
+                        <h2>New High Score</h2>
+                        <MarqueeText text="Personal Best Achieved" />
+                        <Show when={top_score_entry_submitted()} fallback={
+                        <input type='text' placeholder="Enter Your Handle" maxLength="8" minLength="3" onInput={e => on_handle_changed((e.target as HTMLInputElement).value)} onChange={on_submit_handle_entry}></input>
+                        }>
+                            
+                            <Show when={show_vote_feedback()} fallback={
+                                <HighScoreReview onBackToGame={on_back_to_game} />
+                            }>
+                                    <VoteFeedback onSkip={on_skip_feedback} onClose={() => set_show_vote_feedback(false)}/>
+                            </Show>
+                         </Show>
+
+                        <div class='leaderboards'>
+                            <Show when={top_scores()}>{top_scores =>
+                                <Leaderboard title="Top Scores" scores={top_scores()} highlight={top_score_entry_submitted() ? undefined : top_scores_highlight()} />
+                            }</Show>
+                            <Show when={top_combos()}>{top_combos =>
+                                <Leaderboard title="Top Combo" scores={top_combos()} highlight={top_score_entry_submitted() ? undefined : top_combos_highlight()} />
+                            }</Show>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        </Show>
     </main>
     </>)
 }
 
+function HighScoreReview(props: { onBackToGame: () => void }) {
 
-function GameResultOnReplay(props: { score: number, combo: number, win: boolean }) {
+    let navigate = useNavigate()
+    const on_see_highscores = () => {
+        navigate('/')
+    }
+
+    return (<>
+        <div class='high-score-review'>
+            <div class='buttons'>
+                <MeetButton onClick={on_see_highscores} meet={true}>See High Scores</MeetButton>
+                <MeetButton onClick={props.onBackToGame} draw={true}>Back to Game</MeetButton>
+            </div>
+        </div>
+    </>)
+}
+
+type Vote = 'yes' | 'no' | 'skip'
+
+function VoteFeedback(props: { onSkip: () => void, onClose: () => void }) {
+
+    const submit = (vote: Vote) => {
+        if (vote === 'skip') {
+            props.onSkip()
+        }
+        props.onClose()
+    }
+
+    return (<>
+    <div class='feedback'>
+        <p>Did you like Bandit Chess?</p>
+        <div class='buttons'>
+        <MeetButton onClick={() => submit('yes')} draw={true}>Yes</MeetButton>
+        <MeetButton onClick={() => submit('no') } draw={true} meet={true}>No</MeetButton>
+        <MeetButton onClick={() => submit('skip') } gray={true}><small>Don't Show Again</small></MeetButton>
+        </div>
+    </div>
+    </>)
+}
+
+
+
+function GameResultOnReplay(props: { score: number, combo: number, win: boolean, top: boolean }) {
 
     return (<>
     <div class='result'>
@@ -350,12 +530,17 @@ function GameResultOnReplay(props: { score: number, combo: number, win: boolean 
            <span class='combo'>Combo: {props.combo}</span>
            </div>
 
-            <div class='note'>
-                <div class='marquee'> <span>Personal Best Achieved.</span> </div>
-            </div>
+                    <Show when={props.top}>
+                        <div class='note'>
+                            <div class='marquee'> <span>Personal Best Achieved.</span> </div>
+                            <MarqueeText text="Personal Best Achieved." />
+                        </div>
+                    </Show>
+            <Show when={false}>
             <div class='note2'>
-                <div class='marquee'> <span>Top Leaderboard Achieved.</span> </div>
+                <MarqueeText text="Top Leaderboard Achieved."/>
             </div>
+                    </Show>
         </div>
         </Show>
     </div>
@@ -425,6 +610,8 @@ function ScoreDelta(props: { small: boolean, flip: boolean, skip: boolean, score
 }
 
 function select_engine_pv(pv: MultiPV) {
+
+    //return pv[pv.length - 1]
     let top_cp = pv[0].cp
     if (!top_cp) {
         return pv[0]
@@ -471,6 +658,7 @@ function select_engine_pv(pv: MultiPV) {
 }
 
 function score_pv(pvs: MultiPV, uci: UCI) {
+    //return 0
     let i = pvs.findIndex(_ => _.uci === uci)
     if (i === -1) {
         return 0

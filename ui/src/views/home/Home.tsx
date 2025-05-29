@@ -2,6 +2,7 @@ import { A, useNavigate } from "@solidjs/router"
 import { For, Show } from "solid-js"
 import './Home.scss'
 import { MeetButton } from "../../components/MeetButton"
+import { pad_7 } from "../../game/util"
 
 export default function Home() {
   
@@ -83,12 +84,4 @@ export default function Home() {
     </div>
     </main>
   </>)
-}
-
-function pad_7<T>(a: T[]) {
-  let p = 7 - a.length
-
-  let res = Array(p)
-
-  return [...a, ...res]
 }

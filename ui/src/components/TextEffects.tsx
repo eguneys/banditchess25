@@ -23,3 +23,10 @@ export function AuroraText(props: { text: string }) {
         </div>
     </>)
 }
+
+
+export function MarqueeText(props: { text: string }) {
+    return (<>
+        <div class='marquee'> <span>{props.text}</span> </div>
+    </>)
+}

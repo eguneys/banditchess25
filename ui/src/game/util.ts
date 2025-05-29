@@ -27,3 +27,11 @@ export function box_intersect(a: XYWH, b: XYWH) {
 
     return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by
 }
+
+export function pad_7<T>(a: T[]) {
+  let p = 7 - a.length
+
+  let res = Array(p).fill(undefined)
+
+  return [...a, ...res]
+}
