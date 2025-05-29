@@ -18,29 +18,27 @@
 * [x] Feedback Screen
 
 * [x] High scores page, top scores vs personal scores
+* [x] High score New Indication
 
 * [x] Clear Local Storage Beta
 * [x] Stockfish Download Progress
 
 * [x] Leaderboard API Endpoint
 * [x] Leaderboard Display
+* [x] Vote API Endpoint
+* [x] API Service Unavailable Visuals
 
-* [ ] Vote API Endpoint
-* [ ] Feedback API Endpoint
-
-* [ ] Stockfish Eval wait time indicator.
-
-
-* [ ] Audio Feedback
-* [ ] Audio Music
-* [ ] Volume Control Settings
-
-
-* [ ] API Service Unavailable Visuals
+* [ ] Vote Back View API
 
 * [ ] Deploy Github Pages
 * [ ] Deploy Netlify
 * [ ] Deploy Google Cloud
+
+* [ ] Stockfish Eval wait time indicator.
+
+* [ ] Audio Feedback
+* [ ] Audio Music
+* [ ] Volume Control Settings
 
 * [ ] Difficulty Balance
 * [ ] Overall Stress Test
