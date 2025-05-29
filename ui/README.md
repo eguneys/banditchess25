@@ -22,11 +22,11 @@
 * [x] Clear Local Storage Beta
 * [x] Stockfish Download Progress
 
-* [ ] Leaderboard API Endpoint
+* [x] Leaderboard API Endpoint
+* [x] Leaderboard Display
+
 * [ ] Vote API Endpoint
 * [ ] Feedback API Endpoint
-* [ ] Leaderboard Display
-
 
 * [ ] Stockfish Eval wait time indicator.
 

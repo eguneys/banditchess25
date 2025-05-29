@@ -1,9 +1,16 @@
 .sliced-text {
-    color: black;
-    position: relative;
-    background: linear-gradient(transparent 50%, #000 50%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  color: transparent;
+
+    &::before {
+        content: attr(data-heading);
+        position: absolute;
+        background: linear-gradient(transparent 50%, #000 50%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        left: 50%;
+        transform: translate(-50%, -2px);
+        animation: fracture-reverse 2s infinite cubic-bezier(0.075, 0.82, 0.165, 1);
+    }
 
     &::after {
         content: attr(data-heading);
@@ -16,6 +23,19 @@
         animation: fracture 2s infinite cubic-bezier(0.075, 0.82, 0.165, 1);
     }
 }
+
+
+@keyframes fracture-reverse {
+    0% {
+        transform: translate(calc(-50% + 0px), -2px);
+    }
+
+    80% {
+        transform: translate(calc(-50% + 20px), -2px);
+    }
+}
+
+
 
 @keyframes fracture {
     0% {
