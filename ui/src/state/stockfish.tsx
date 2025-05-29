@@ -134,7 +134,7 @@ export function StockfishProvider(props: { children: JSX.Element}) {
         if (working) {
             return
         }
-        let fen = queue.pop()
+        let fen = queue.shift()
         if (fen) {
             working = true
             get_multipv(protocol_stuff.protocol, fen).then(pvs => {

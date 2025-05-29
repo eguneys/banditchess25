@@ -187,8 +187,13 @@ function WithStockfish() {
 
         let [f, pvs] = fpvs
 
+        if (persist_state.fen_pvs[f]) {
+            return
+        }
+
         set_persist_state("fen_pvs", f, pvs)
 
+        console.log('resolved', f)
         if (f === fen() && fen_turn(f) === engine_color()) {
             let pv = select_engine_pv(pvs)
 
@@ -259,6 +264,7 @@ function WithStockfish() {
     createComputed(on(() => {
         let pvs = stockfish.pvs[fen()]
 
+        console.log('dep', fen(), pvs)
         if (pvs) {
             let res: [FEN, MultiPV] = [fen(), pvs]
             return res
