@@ -22,18 +22,19 @@
 * [x] Clear Local Storage Beta
 * [x] Stockfish Download Progress
 
+* [ ] Leaderboard API Endpoint
+* [ ] Vote API Endpoint
+* [ ] Feedback API Endpoint
+* [ ] Leaderboard Display
+
+
 * [ ] Stockfish Eval wait time indicator.
 
 
 * [ ] Audio Feedback
 * [ ] Audio Music
-* [ ] Difficulty Balance
 * [ ] Volume Control Settings
 
-* [ ] Leaderboard API Endpoint
-* [ ] Vote API Endpoint
-* [ ] Feedback API Endpoint
-* [ ] Leaderboard Display
 
 * [ ] API Service Unavailable Visuals
 
@@ -41,6 +42,7 @@
 * [ ] Deploy Netlify
 * [ ] Deploy Google Cloud
 
+* [ ] Difficulty Balance
 * [ ] Overall Stress Test
 * [ ] Publish Lichess Blog
 * [ ] Deal with Feedback
