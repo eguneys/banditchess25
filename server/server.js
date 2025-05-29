@@ -15,6 +15,8 @@ const SECRET = process.env.SECRET_SALT || 's3cr3t-s@lt'
 app.use(bodyParser.json());
 app.use(cors())
 
+app.use(express.static('public'))
+
 // Rate limiting: 1 request per 15 seconds per IP
 const limiter = rateLimit({
   windowMs: 15 * 1000,
