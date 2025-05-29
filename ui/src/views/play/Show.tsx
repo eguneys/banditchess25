@@ -279,6 +279,7 @@ function WithStockfish() {
     let player_scores = createMemo(() => color() === 'white' ? white_scores() : black_scores())
 
     return (<>
+
     <main class='vs'>
         <div class='background'>
             <div class='p1'></div>
