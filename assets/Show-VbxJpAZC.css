@@ -1,1 +1,0 @@
-main.leaderboards{display:flex;flex-flow:column}main.leaderboards .content{display:flex}main.leaderboards .content section{display:flex;flex-flow:column;padding:0 1em;border-right:1px solid black}main.leaderboards .content section .boards{display:flex;gap:1em}main.leaderboards .content section:last-child{border-right:none}main.leaderboards a{align-self:flex-end}
