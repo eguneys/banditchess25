@@ -12,7 +12,7 @@ export function Leaderboard(props: { title: string, scores?: (Score | undefined)
 
     return (<>
         <div class='leaderboard' classList={{skip: skip()}}>
-            <h4>{props.title}</h4>
+            <h3>{props.title}</h3>
             <div class='list'>
                 <For each={pad_7(scores())}>{ (score, i) => 
                 <Show when={score} fallback={

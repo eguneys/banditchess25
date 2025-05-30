@@ -10,6 +10,9 @@ export default function() {
 
     return (<>
         <main class='leaderboards'>
+            <div class='background'>
+
+            </div>
             <h1>Leaderboards</h1>
             <div class='content'>
             <section class='world'>

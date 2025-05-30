@@ -1,5 +1,24 @@
 main.bandit {
 
+    .background {
+
+        position: absolute;
+        z-index: -1;
+
+        aspect-ratio: 2.5;
+        width: 200%;
+        transform: translate(-10%, -20%) rotate(45deg);
+
+        $bg1: #606;
+        $bg2: #404;
+        background: repeating-linear-gradient(45deg,
+                $bg1,
+                $bg1 100px,
+                $bg2 100px,
+                $bg2 200px);
+    }
+
+
     padding: 1em;
     .play-vs-buttons {
         display: flex;
@@ -15,20 +34,6 @@ main.bandit {
     .content {
         z-index: 1;
     }
-
-    .fixed {
-        -webkit-user-select: none;
-        user-select: none;
-        z-index: -1;
-        position: fixed;
-        background: rgb(255, 196, 0);
-        color: #192a41;
-        font-size: 2200px;
-        text-shadow: 20px 20px rgb(8, 2, 76);
-        transform: translate(100px, -1600px) rotate(10deg);
-        border-right: 30px solid rgb(103, 223, 103);
-    }
-
 
     .leaderboards {
         .categories {

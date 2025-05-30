@@ -30,9 +30,13 @@
 
 * [x] ~~Vote Back View API~~
 
-* [ ] Deploy Github Pages
-* [ ] Deploy Netlify
+* [x] Deploy Github Pages
+* [x] Deploy Netlify
 * [ ] Deploy Google Cloud
+* [ ] Add HTTPS
+* [ ] Open Graph
+* [ ] Insights
+* [ ] Other Website checkers
 
 * [ ] Stockfish Eval wait time indicator.
 

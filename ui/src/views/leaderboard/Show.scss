@@ -1,6 +1,25 @@
 main.leaderboards {
     display: flex;
     flex-flow: column;
+
+.background {
+
+        position: absolute;
+        z-index: -1;
+
+        aspect-ratio: 2.5;
+        width: 200%;
+        transform: translate(-10%, -20%) rotate(45deg);
+
+        $bg1: rgb(171, 57, 5);
+        $bg2: rgb(96, 64, 32);
+        background: repeating-radial-gradient(circle,
+                    $bg1,
+                    $bg1 88px,
+                    $bg2 88px,
+                    $bg2 188px);
+    }
+
     .content {
         display: flex;
 section {

@@ -17,8 +17,8 @@ export default function Home() {
 
   return (<>
   <main class='bandit'>
-    <div class='fixed'>
-        <span>z</span>
+    <div class='background'>
+
     </div>
     <div class='content'>
     <h2>Bandit Chess</h2>
