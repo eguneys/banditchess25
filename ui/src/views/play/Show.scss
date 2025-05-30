@@ -418,20 +418,51 @@ main.vs {
             display: flex;
             justify-content: space-between;
 
+
+            .score-delta {
+                position: relative;
+                height: 38px;
+
+                .score, .combo-streak {
+                    position: absolute;
+                }
+
+                $pad: 4px;
+                &:not(.flip) {
+                .score {
+                    bottom: $pad; left: $pad;
+                }
+
+                .combo-streak {
+                    bottom: $pad; right: $pad;
+                }
+            }
+
+                &.flip {
+                .score {
+                    bottom: $pad; right: $pad;
+                }
+
+                .combo-streak {
+                    bottom: 0; left: 0;
+                }
+
+
+                }
+            }
+
+
             .score-delta.small {
                 font-size: 0.8em;
-
                 align-items: flex-end;
             }
 
             .score-delta:first-child {
-                padding: 0.2em;
                 background: rgb(225, 241, 205);
                 color: rgb(13, 43, 7);
                 border-top: 1px solid rgb(13, 43, 7);
             }
             .score-delta:last-child {
-                padding: 0.2em;
                 background: rgb(13, 43, 7);
                 color: rgb(225, 241, 205);
                 border-top: 1px solid rgb(225, 241, 205);

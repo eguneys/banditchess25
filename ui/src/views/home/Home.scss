@@ -1,4 +1,9 @@
+@use '../../base_css/media';
+
 main.bandit {
+
+    position: relative;
+    overflow: hidden;
 
     .background {
 
@@ -6,8 +11,12 @@ main.bandit {
         z-index: -1;
 
         aspect-ratio: 2.5;
-        width: 200%;
+        width: 180%;
         transform: translate(-10%, -20%) rotate(45deg);
+
+        pointer-events: none;
+        overflow: hidden;
+
 
         $bg1: #606;
         $bg2: #404;
@@ -24,6 +33,10 @@ main.bandit {
         display: flex;
         gap: 2em;
 
+            @include media.mq-is-col1 {
+                    flex-flow: column;
+                }
+
         button {
             cursor: pointer;
             padding: 0.8em;
@@ -37,6 +50,11 @@ main.bandit {
 
     .leaderboards {
         .categories {
+
+            @include media.mq-is-col1 {
+                    flex-flow: column;
+                }
+
         margin-left: 0.5em;
         display: flex;
         gap: 6em;
