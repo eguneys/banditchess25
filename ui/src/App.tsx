@@ -2,7 +2,7 @@ import { ErrorBoundary, lazy, Show } from 'solid-js'
 import './App.scss'
 import { StoreProvider} from './state'
 import { MetaProvider } from '@solidjs/meta'
-import { A, Route, Router, type RouteSectionProps } from '@solidjs/router'
+import { Route, Router, type RouteSectionProps } from '@solidjs/router'
 
 const Beta = lazy(() => import('./views/home/Beta'))
 const Home = lazy(() => import('./views/home/Home'))

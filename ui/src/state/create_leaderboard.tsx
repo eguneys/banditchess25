@@ -118,7 +118,7 @@ type LeaderboardAgent = {
     submit_combo(score: Score): Promise<void>
 }
 
-export const API_ENDPOINT = import.meta.env.DEV ? `http://localhost:3300` : ``
+export const API_ENDPOINT = import.meta.env.DEV ? `http://localhost:3300` : `http://localhost:3300`
 export const $ = (path: string, opts?: RequestInit) => fetch(API_ENDPOINT + path, opts).then(_ => _.json())
 
 function create_agent(): LeaderboardAgent {

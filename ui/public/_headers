@@ -1,0 +1,11 @@
+/
+  Cross-Origin-Embedder-Policy : require-corp
+  Cross-Origin-Opener-Policy : same-origin
+  Cross-Origin-Resource-Policy : same-site
+/vs
+  Cross-Origin-Embedder-Policy : require-corp
+  Cross-Origin-Opener-Policy : same-origin
+  Cross-Origin-Resource-Policy : same-site
+/assets/*
+  Cross-Origin-Embedder-Policy : require-corp
+  Cross-Origin-Opener-Policy : same-origin
