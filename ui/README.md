@@ -34,12 +34,13 @@
 * [x] Deploy Netlify
 * [x] Deploy Google Cloud
 * [x] Open Graph
-* [ ] Add HTTPS
+* [x] Add HTTPS
+
 * [ ] Insights
 * [ ] Other Website checkers
 
-* [ ] Only download Small NNUE File
 * [ ] Stockfish Eval wait time indicator.
+* [ ] Only download Small NNUE File
 
 * [ ] Audio Feedback
 * [ ] Audio Music
@@ -52,7 +53,6 @@
 * [ ] Publish Lichess Blog
 
 * [ ] Write Technical Blog Article
-
 * [ ] Deal with Feedback
 
 ## Disposable
