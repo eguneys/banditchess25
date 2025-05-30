@@ -38,6 +38,8 @@
 * [ ] Insights
 * [ ] Other Website checkers
 
+
+* [ ] Only download Small NNUE File
 * [ ] Stockfish Eval wait time indicator.
 
 * [ ] Audio Feedback
@@ -46,8 +48,10 @@
 
 * [ ] Difficulty Balance
 * [ ] Overall Stress Test
-* [ ] Publish Lichess Blog
 * [ ] Deal with Feedback
+
+* [ ] Write Blog Article
+* [ ] Publish Lichess Blog
 
 ## Disposable
 

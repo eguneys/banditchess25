@@ -20,7 +20,7 @@ app.use(express.static('public'))
 // Rate limiting: 1 request per 15 seconds per IP
 const limiter = rateLimit({
   windowMs: 15 * 1000,
-  max: 100,
+  max: 3,
   message: { error: 'Too many submissions. Try again soon.' }
 });
 app.use('/submit', limiter);
