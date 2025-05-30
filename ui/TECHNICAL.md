@@ -30,3 +30,5 @@ SolidJS-wise there's this tension between using `createEffect` to affect the con
 
 
 For the amount of polish, it still doesn't pass the professional tests. Is this the best I can do? We will see how much time I have to do it better.
+
+The MIT Licensed source code for Bandit Chess can be found [here](https://github.com/eguneys/banditchess25).
