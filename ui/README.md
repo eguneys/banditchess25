@@ -51,6 +51,8 @@
 * [x] Write Blog Article
 * [ ] Publish Lichess Blog
 
+* [ ] Write Technical Blog Article
+
 * [ ] Deal with Feedback
 
 ## Disposable

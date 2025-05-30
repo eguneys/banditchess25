@@ -4,6 +4,7 @@ main.bandit {
 
     position: relative;
     overflow: hidden;
+    padding: 1em;
 
     .background {
 
@@ -28,7 +29,6 @@ main.bandit {
     }
 
 
-    padding: 1em;
     .play-vs-buttons {
         display: flex;
         gap: 2em;
@@ -42,7 +42,6 @@ main.bandit {
             padding: 0.8em;
         }
     }
-    position: relative;
 
     .content {
         z-index: 1;
@@ -51,13 +50,15 @@ main.bandit {
     .leaderboards {
         .categories {
 
-            @include media.mq-is-col1 {
-                    flex-flow: column;
-                }
 
         margin-left: 0.5em;
         display: flex;
         gap: 6em;
+
+            @include media.mq-is-col1 {
+                    flex-flow: column;
+                }
+
         .category.disabled {
             color: gray;
         }

@@ -720,8 +720,8 @@ function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_pat
         }
 
         if (c() !== undefined) {
-            cont.scrollTop = 99999
-            return
+            //cont.scrollTop = 99999
+            //return
         }
 
         let top = target.offsetTop - cont.offsetHeight / 2 + target.offsetHeight
