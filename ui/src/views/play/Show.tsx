@@ -52,9 +52,8 @@ function WithStockfish() {
     const stockfish_download_percent = createMemo(() => {
         let res = downloaded_nb()
         if (res) {
-            let i =  Math.round(res.bytes / res.total * 100)
+            let i =  Math.round(res.bytes / (res.total ?? 74874478) * 100)
 
-            console.log(res.bytes, res.total, i)
             if (i === 100) {
                 return undefined
             }
