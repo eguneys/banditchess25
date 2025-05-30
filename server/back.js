@@ -23,8 +23,12 @@ app.get('/votes', (req, res) => {
   });
 })
 
-app.get('/drop', (req, res) => {
+app.get('/drop/leaders', (req, res) => {
   db.run(`DROP TABLE leaderboard`)
+})
+
+app.get('/drop/votes', (req, res) => {
+  db.run(`DROP TABLE votes`)
 })
 
 // Start server

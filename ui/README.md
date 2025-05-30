@@ -28,7 +28,7 @@
 * [x] Vote API Endpoint
 * [x] API Service Unavailable Visuals
 
-* [ ] Vote Back View API
+* [x] ~~Vote Back View API~~
 
 * [ ] Deploy Github Pages
 * [ ] Deploy Netlify
