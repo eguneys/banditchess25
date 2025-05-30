@@ -32,12 +32,11 @@
 
 * [x] Deploy Github Pages
 * [x] Deploy Netlify
-* [ ] Deploy Google Cloud
+* [x] Deploy Google Cloud
+* [x] Open Graph
 * [ ] Add HTTPS
-* [ ] Open Graph
 * [ ] Insights
 * [ ] Other Website checkers
-
 
 * [ ] Only download Small NNUE File
 * [ ] Stockfish Eval wait time indicator.
@@ -48,10 +47,11 @@
 
 * [ ] Difficulty Balance
 * [ ] Overall Stress Test
-* [ ] Deal with Feedback
 
-* [ ] Write Blog Article
+* [x] Write Blog Article
 * [ ] Publish Lichess Blog
+
+* [ ] Deal with Feedback
 
 ## Disposable
 
