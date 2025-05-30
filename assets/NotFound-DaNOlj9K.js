@@ -1,1 +1,0 @@
-import{t as o,i as r,c as e}from"./index-BpXD8XUH.js";import{A as n}from"./components-CJm56cbL.js";var a=o("<main class=not-found><p>404 Not Found");function m(){return(()=>{var t=a();return t.firstChild,r(t,e(n,{href:"/",children:"Back to Home"}),null),t})()}export{m as default};
