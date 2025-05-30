@@ -54,6 +54,7 @@ function WithStockfish() {
         if (res) {
             let i =  Math.round(res.bytes / res.total * 100)
 
+            console.log(res.bytes, res.total, i)
             if (i === 100) {
                 return undefined
             }
