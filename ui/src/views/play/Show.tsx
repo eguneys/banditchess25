@@ -237,7 +237,7 @@ function WithStockfish() {
             let d = delta[delta.length - 1]
             let is_my_move = color() === (delta.length % 2 === 1 ? 'white' : 'black')
             if (d !== undefined) {
-                play_delta_audio(d, is_my_move ? 0.8: 0.3)
+                play_delta_audio(d, is_my_move ? 0.5: 0.1)
             }
         }
     }))
