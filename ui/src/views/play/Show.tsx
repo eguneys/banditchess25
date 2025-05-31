@@ -326,6 +326,7 @@ function WithStockfish() {
     let white_scores = createMemo(() => scores_for_color('white'))
     let black_scores = createMemo(() => scores_for_color('black'))
     let player_scores = createMemo(() => color() === 'white' ? white_scores() : black_scores())
+    let engine_scores = createMemo(() => engine_color() === 'white' ? white_scores() : black_scores())
 
     let [{ leaderboard }, { add_top_score, add_top_combo }] = useStore()
 
@@ -336,12 +337,24 @@ function WithStockfish() {
     const top_score_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().classic, Date.now()])
     const top_combo_entry = createMemo<Score>(() => [top_score_entry_handle()!, player_scores().combo, Date.now()])
 
-    const top_scores_highlight = createMemo(() => {
+    const game_result_win_for_player = createMemo(() => {
         if (!persist_state.game_result) {
-            return undefined
+            return false
         }
 
-        if (persist_state.game_result[1] !== color()) {
+        if (persist_state.game_result[1] === color()) {
+
+            return true
+        }
+
+        return player_scores().classic > engine_scores().classic || player_scores().combo > engine_scores().combo
+
+        return true
+
+    })
+
+    const top_scores_highlight = createMemo(() => {
+        if (!game_result_win_for_player()) {
             return undefined
         }
 
@@ -353,11 +366,7 @@ function WithStockfish() {
     })
 
     const top_combos_highlight = createMemo(() => {
-        if (!persist_state.game_result) {
-            return undefined
-        }
-
-        if (persist_state.game_result[1] !== color()) {
+        if (!game_result_win_for_player()) {
             return undefined
         }
 
