@@ -20,13 +20,18 @@ function MyApp() {
         <Route path="/vs" component={Stockfish}/>
         <Route path="/top" component={Leaderboard}/>
         <Route path="/about" component={About}/>
-        <Route path="/beta" component={Beta}/>
+        <Route path="/beta" component={BetaComponent}/>
         <Route path="*" component={NotFound}/>
       </Router>
     </MetaProvider>
   </>)
 }
 
+const BetaComponent = () => {
+  return (<>
+  <Beta/>
+  </>)
+}
 
 const AppInRouterWithStore = (props: RouteSectionProps) => {
   return (
@@ -43,7 +48,7 @@ const AppInRouter = (props: RouteSectionProps) => {
       </header>
       <div class='main-wrap'>
          <Show when={import.meta.env.DEV} fallback= {
-            <ErrorBoundary fallback={_ => Beta()}>
+            <ErrorBoundary fallback={(error: { message: string }) => Beta(error)}>
               {props.children}
             </ErrorBoundary>
           }>
