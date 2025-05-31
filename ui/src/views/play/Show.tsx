@@ -1,4 +1,4 @@
-import { batch, children, createComputed, createEffect, createMemo, createSignal, For, type JSX, on, Show, untrack } from 'solid-js'
+import { batch, children, createComputed, createEffect, createMemo, createSignal, For, type JSX, on, Show } from 'solid-js'
 import { non_passive_on_wheel, PlayUciBoard } from '../../components/PlayUciBoard'
 import { useStore } from '../../state'
 import { StockfishProvider, useStockfish, type MultiPV } from '../../state/stockfish'
@@ -15,7 +15,7 @@ import { AuroraText, MarqueeText, SlicedText } from '../../components/TextEffect
 import { find_score_entry_index, type Score } from '../../state/create_leaderboard'
 import { Leaderboard } from '../../components/Leaderboard'
 import type { Vote } from '../../state/create_feedback'
-import { AudioProvider, useAudio } from '../../components/audio'
+import { AudioProvider, useAudio } from '../../components/Audio'
 
 export const PERSIST_NAME_PLAY_SHOW_STATE = '.banditchess.vs-stockfish-save.v0'
 
