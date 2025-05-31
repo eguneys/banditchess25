@@ -4,6 +4,7 @@ import { protocol, type LocalEval } from "../ceval2/stockfish-module"
 import { createAsync } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 import throttle from "../common/throttle";
+import { isAndroid, isIPad } from "./device";
 
 const gen_game_id = (() => { let i = 0; return () => `${i++}` })()
 
@@ -52,7 +53,7 @@ function get_multipv(p: Protocol, fen: FEN): Promise<MultiPV> {
     let ply = 0
 
     let threads = Math.max(1, navigator.hardwareConcurrency - 2)
-    let hash_size = 256
+    let hash_size = (isAndroid() || isIPad()) ? 64 : 256
 
     let game_id = gen_game_id()
 
