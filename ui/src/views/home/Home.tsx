@@ -53,9 +53,11 @@ export default function Home() {
       <br/>
       The first 6 moves are not scored to skip opening theory.
       <br/>
-      You have to win the game to be eligible for leaderboards.
+      You have to win* the game  to be eligible for leaderboards.
       <br/>
       Game ends when move 40 is reached, or a checkmate happens.
+      <br/>
+      <small>*Either by getting a checkmate or getting a higher score than Stockfish</small>
     </small>
     <footer>
       <A href="/about">About</A>
