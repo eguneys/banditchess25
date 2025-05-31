@@ -1,6 +1,9 @@
 const memoize = <T>(fn: ()=> T) => {
-    let val = fn()
+    let val: T | undefined  = undefined
     return () => {
+        if (!val) {
+            val = fn()
+        }
         return val
     }
 }
