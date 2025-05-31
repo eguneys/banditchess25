@@ -36,23 +36,25 @@
 * [x] Open Graph
 * [x] Add HTTPS
 
-* [ ] Insights
-* [ ] Other Website checkers
+* [x] Insights
+* [x] Other Website checkers
 
-* [ ] Stockfish Eval wait time indicator.
-* [ ] Only download Small NNUE File
+* [x] Write Blog Article
+* [x] Write Technical Blog Article
 
-* [ ] Audio Feedback
-* [ ] Audio Music
-* [ ] Volume Control Settings
+* [x] Stockfish Eval wait time indicator. /* https://stackoverflow.com/questions/79643762/createcomputed-with-2-dependencies-one-dependency-changes-quickly-the-first-dep */
+
+* [ ] ~~Only download Small NNUE File~~
+* [ ] ~~Volume Control Settings~~
+* [ ] ~~Audio Music~~
+
+* [x] Audio Feedback
 
 * [ ] Difficulty Balance
 * [ ] Overall Stress Test
 
-* [x] Write Blog Article
 * [ ] Publish Lichess Blog
 
-* [ ] Write Technical Blog Article
 * [ ] Deal with Feedback
 
 ## Disposable

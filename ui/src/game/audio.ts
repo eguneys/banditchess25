@@ -4,26 +4,26 @@ async function load_audio(ctx: AudioContext, src: string) {
     return audio_buffer
 }
 
-type AudioContent = {
+export type AudioContent = {
     load: () => Promise<void>
-    play: (buffer: AudioBuffer) => void
+    play: (name: string, loop?: boolean, volume?: number) => void
     buffers: Record<string, AudioBuffer>
 }
 
-function AudioContent() {
+export function AudioContent(): AudioContent {
 
     let ctx = new AudioContext()
 
     let buffers: Record<string, AudioBuffer> = { }
 
     async function load() {
-        buffers['main_song'] = await load_audio(ctx, './marimba_copilot0501.mp3')
-
-
-        //buffers['pickup'] = await load_audio(ctx, '/audio/sound/pickup.mp3')
+        buffers['hit0'] = await load_audio(ctx, './audio/hit0.mp3')
+        buffers['hit3'] = await load_audio(ctx, './audio/hit3.mp3')
+        buffers['hit6'] = await load_audio(ctx, './audio/hit6.wav')
+        buffers['hit5'] = await load_audio(ctx, './audio/hit5.wav')
     }
 
-    function play(music: string, loop: boolean = false, volume: number = 1) {
+    function play(music: string, loop: boolean = false, volume: number = 0.5) {
         let buffer = buffers[music]
         const source = ctx.createBufferSource()
         source.buffer = buffer
@@ -49,5 +49,3 @@ function AudioContent() {
         buffers
     }
 }
-
-export default AudioContent()

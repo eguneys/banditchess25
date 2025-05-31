@@ -1,4 +1,4 @@
-import { batch, children, createComputed, createEffect, createMemo, createSignal, For, type JSX, on, Show } from 'solid-js'
+import { batch, children, createComputed, createEffect, createMemo, createSignal, For, type JSX, on, Show, untrack } from 'solid-js'
 import { non_passive_on_wheel, PlayUciBoard } from '../../components/PlayUciBoard'
 import { useStore } from '../../state'
 import { StockfishProvider, useStockfish, type MultiPV } from '../../state/stockfish'
@@ -15,15 +15,18 @@ import { AuroraText, MarqueeText, SlicedText } from '../../components/TextEffect
 import { find_score_entry_index, type Score } from '../../state/create_leaderboard'
 import { Leaderboard } from '../../components/Leaderboard'
 import type { Vote } from '../../state/create_feedback'
+import { AudioProvider, useAudio } from '../../components/audio'
 
 export const PERSIST_NAME_PLAY_SHOW_STATE = '.banditchess.vs-stockfish-save.v0'
 
 export default function() {
 
     return (<>
+    <AudioProvider>
     <StockfishProvider>
         <WithStockfish/>
     </StockfishProvider>
+    </AudioProvider>
     </>)
 }
 
@@ -61,9 +64,7 @@ function WithStockfish() {
         }
     })
 
-    createEffect(() => {
-        console.log(engine_failed())
-    })
+    console.log(engine_failed())
 
     let [state, {
         initialize_replay, 
@@ -119,7 +120,6 @@ function WithStockfish() {
             return score_pv(pvs, _.uci)
         })
     )
-
 
     const score_add_skip_opening = createMemo(() => state.replay.list.length < 10)
 
@@ -219,6 +219,30 @@ function WithStockfish() {
             request_next_fen_or_end_the_game()
         }
     }
+
+    let a = useAudio()
+    const play_delta_audio = (delta: number, volume: number) => {
+        if (delta === 0) {
+            a.play('hit0', false, volume)
+        } else if (delta < 3) {
+            a.play('hit3', false, volume)
+        } else if (delta < 5) {
+            a.play('hit5', false, volume)
+        } else {
+            a.play('hit6', false, volume)
+        }
+    }
+    createComputed(on(score_deltas, (delta, prev_delta) => {
+        if (!prev_delta || delta.length !== prev_delta.length) {
+            let d = delta[delta.length - 1]
+            let is_my_move = color() === (delta.length % 2 === 1 ? 'white' : 'black')
+            if (d !== undefined) {
+                play_delta_audio(d, is_my_move ? 0.8: 0.3)
+            }
+        }
+    }))
+
+
 
     const on_play_orig_key = (orig: Key, dest: Key) => {
 
@@ -436,7 +460,7 @@ function WithStockfish() {
             </div>
             <div class='replay-wrap'>
                 <div class='top-padding'></div>
-                <div class='user-top'>
+                <div class='user-top' classList={{turn: !eval_scored()}}>
                     <span class='user ai'>Stockfish</span>
                     <span class='time'>0:00</span>
                     <Show when={stockfish_download_percent()}>{percent => 
@@ -461,7 +485,7 @@ function WithStockfish() {
                     <MeetButton meet={true} onClick={on_restart}>Restart</MeetButton>
                     <MeetButton meet={true} onClick={on_go_home}>Go Home</MeetButton>
                 </div>
-                <div class='user-bottom'>
+                <div class='user-bottom' classList={{turn: movable()}}>
                     <span class='user'>You</span>
                     <span class='time'>0:00</span>
                 </div>
@@ -719,16 +743,25 @@ function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_pat
             return
         }
 
-        if (c() !== undefined) {
-            //cont.scrollTop = 99999
-            //return
-        }
 
         let top = target.offsetTop - cont.offsetHeight / 2 + target.offsetHeight
         cont.scrollTo({ behavior: 'smooth', top })
     })
-
     let c = children(() => props.children)
+
+    createEffect(() => {
+        if (c() !== undefined) {
+            let cont = $moves_el.parentElement
+            if (!cont) {
+                return
+            }
+
+            cont.scrollTop = 99999
+            return
+        }
+    })
+
+
     return (<>
         <div class='list-wrap'>
             <div ref={el => { $moves_el = el }} class='list'>
@@ -745,6 +778,7 @@ function ReplaySingle(props: { onSetCursorPath: (path: Path) => void, cursor_pat
 
 function Step(props: { is_opening: boolean, delta: number | undefined, onSetCursorPath: (path: Path) => void, step: Step, cursor_path: Path }) {
 
+    const delta = createMemo(() => props.delta)
     const step = props.step
     const plus_if_positive = (is_opening: boolean, delta?: number) => delta === undefined ? '...' : is_opening ? delta : delta === 0 ? '0': `+${delta}`
 
@@ -754,8 +788,9 @@ function Step(props: { is_opening: boolean, delta: number | undefined, onSetCurs
 
     setTimeout(() => set_show_klass(true), 100)
 
+
     return (<>
-        <span onClick={() => props.onSetCursorPath(step.path)} classList={{ 'on-path-end': step.path === props.cursor_path }} class='step'>{step.ply % 2 === 1 ? ply_to_index(step.ply) : ''} {step.san} <span classList={{ opening: props.is_opening, [delta_klass(props.is_opening, props.delta)]: true }} class='delta'>{plus_if_positive(props.is_opening, props.delta)} </span> </span>
+        <span onClick={() => props.onSetCursorPath(step.path)} classList={{ 'on-path-end': step.path === props.cursor_path }} class='step'>{step.ply % 2 === 1 ? ply_to_index(step.ply) : ''} {step.san} <span classList={{ opening: props.is_opening, [delta_klass(props.is_opening, props.delta)]: true }} class='delta'>{plus_if_positive(props.is_opening, delta())} </span> </span>
     </>)
 }
 

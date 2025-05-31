@@ -515,6 +515,10 @@ main.vs {
                 color: gray;
                 opacity: .8;
             }
+
+            &.turn {
+                background: rgba(247, 255, 157, 0.3);
+            }
         }
 
         .score-delta {

@@ -16,7 +16,7 @@ So WebGL aside, I also developed the website aidchess.com. It also uses chessgro
 
 Aidchess.com has no backend, and it is feature-wise lacks content, so basically non-advertisable. But it has hidden features, so feel free to play around with it.
 
-For the past couple of years, I see a chess themed website with a different feature set pop up. Usually it is either behind a paywall, requires sign-up or lacks actual content. I believe in free educational content easily accessible to everyone. I also value the effort and time invested in developing such content so that's where the community has to step in. I reached out to an open source community developing opening theory studies on lichess, but we couldn't cooperate. So maybe in the future.
+For the past couple of years, I see a chess themed website, with a different feature set, pop up every once in a while. Usually it is either behind a paywall, requires sign-up or lacks actual content. I believe in free educational content easily accessible to everyone. I also value the effort and time invested in developing such content so that's where the community has to step in. I reached out to an open source community developing opening theory studies on lichess, but we couldn't cooperate. So maybe in the future.
 
 Back to Bandit Chess, it works as a single page application that uses SolidJS. I use vite for the bundler it's a really smooth immediate feedback developer experience. SCSS shapes the overall visual design. 
 
@@ -26,7 +26,7 @@ I setup a goal to quickly finish a prototype, in a fail fast approach and introd
 
 Also there is the leaderboards, this time some reason to involve a backend and possibly maintain it for the future. It's a simple NodeJS Express server I asked Chat GPT to write, which I further refined it to my needs better.
 
-SolidJS-wise there's this tension between using `createEffect` to affect the control flow, or let it flow by itself. So it's not pretty sometimes, I stumbled upon a trouble, which I describe in this [SO post](https://stackoverflow.com/questions/79643762/createcomputed-with-2-dependencies-one-dependency-changes-quickly-the-first-dep/79643894#79643894).
+SolidJS-wise there's this tension between using `createEffect` to affect the control flow, or let it flow by itself. So it's not pretty sometimes, I stumbled upon a trouble, which I describe in this [SO post](https://stackoverflow.com/questions/79643762/createcomputed-with-2-dependencies-one-dependency-changes-quickly-the-first-dep).
 
 
 For the amount of polish, it still doesn't pass the professional tests. Is this the best I can do? We will see how much time I have to do it better.
