@@ -8,7 +8,7 @@ export function Leaderboard(props: { title: string, scores?: (Score | undefined)
     const scores = () => props.scores ?? pad_7([])
     const skip = () => props.scores === undefined
 
-    const is_new = (created_at: number) => Date.now() - created_at < 10 * 60 * 1000
+    const is_new = (created_at: number) => Date.now() - created_at < 6 * 60 * 60 * 1000
 
     return (<>
         <div class='leaderboard' classList={{skip: skip()}}>
